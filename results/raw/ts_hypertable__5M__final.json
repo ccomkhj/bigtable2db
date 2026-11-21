@@ -1,0 +1,421 @@
+{
+ "solution": "ts_hypertable",
+ "engine": "timescaledb",
+ "strategy": "hypertable by_range(period), 4 parallel COPY streams into a new hypertable, indexes after load, rename swap",
+ "atomic_swap": true,
+ "scale": "5M",
+ "rows": 5000000,
+ "reps": 3,
+ "tag": "final",
+ "started_utc": "2026-11-21T20:59:09+00:00",
+ "host": {
+  "cpus": 4,
+  "cpu_model": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "mem_gb": 15.7,
+  "kernel": "6.18.44-fc-v726",
+  "python": "3.13.18"
+ },
+ "steps": {
+  "initial_load": {
+   "total_s": 43.3,
+   "phases": {
+    "copy": 32.805,
+    "index": 9.286,
+    "analyze": 1.183,
+    "swap": 0.007
+   },
+   "notes": {
+    "chunks": 3
+   },
+   "cpu_avg_pct": 34.6,
+   "cpu_max_pct": 100.0,
+   "mem_peak_gb": 4.91,
+   "disk_peak_delta_gb": 6.59,
+   "verify": {
+    "ok": true,
+    "got": [
+     5000000,
+     2500036124.131965,
+     1252488814.4500415,
+     4999999
+    ],
+    "want": [
+     5000000,
+     2500036124.1320095,
+     1252488814.4500453,
+     4999999
+    ]
+   }
+  },
+  "storage": {
+   "table": 2563768320,
+   "index_a": 770195456,
+   "index_b": 772358144,
+   "total": 4106321920,
+   "database": 4116068019,
+   "chunks": 3,
+   "data_dir_bytes": 6935431759
+  },
+  "queries": {
+   "point": {
+    "verified": true,
+    "n": 500,
+    "p50_ms": 0.172,
+    "p95_ms": 0.315,
+    "p99_ms": 1.718,
+    "max_ms": 10.415,
+    "mean_ms": 0.237
+   },
+   "series": {
+    "verified": true,
+    "n": 500,
+    "p50_ms": 0.215,
+    "p95_ms": 0.313,
+    "p99_ms": 0.398,
+    "max_ms": 0.449,
+    "mean_ms": 0.226
+   },
+   "tenant_agg": {
+    "verified": true,
+    "n": 40,
+    "p50_ms": 7.089,
+    "p95_ms": 22.337,
+    "p99_ms": 137.096,
+    "max_ms": 137.096,
+    "mean_ms": 11.798
+   },
+   "full_agg": {
+    "verified": true,
+    "n": 5,
+    "p50_ms": 457.695,
+    "p95_ms": 532.619,
+    "p99_ms": 532.619,
+    "max_ms": 532.619,
+    "mean_ms": 465.142
+   }
+  },
+  "concurrency": {
+   "n": 64186,
+   "p50_ms": 1.697,
+   "p95_ms": 3.512,
+   "p99_ms": 4.988,
+   "max_ms": 51.784,
+   "mean_ms": 1.87,
+   "threads": 8,
+   "seconds": 15.01,
+   "qps": 4275.9,
+   "errors": 0
+  },
+  "refresh": [
+   {
+    "total_s": 47.219,
+    "phases": {
+     "copy": 33.493,
+     "index": 9.866,
+     "analyze": 1.275,
+     "swap": 2.572
+    },
+    "notes": {
+     "chunks": 3
+    },
+    "cpu_avg_pct": 35.0,
+    "cpu_max_pct": 99.5,
+    "mem_peak_gb": 5.78,
+    "disk_peak_delta_gb": 6.51,
+    "reader": {
+     "n": 2333,
+     "p50_ms": 0.517,
+     "p95_ms": 1.305,
+     "p99_ms": 4.041,
+     "max_ms": 19.215,
+     "mean_ms": 0.684,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.042,
+     "first_error": null
+    },
+    "verify": {
+     "ok": true,
+     "got": [
+      5000000,
+      2500036124.131939,
+      1252488814.4500058,
+      4999999
+     ],
+     "want": [
+      5000000,
+      2500036124.1320095,
+      1252488814.4500453,
+      4999999
+     ]
+    }
+   },
+   {
+    "total_s": 46.148,
+    "phases": {
+     "copy": 32.623,
+     "index": 9.264,
+     "analyze": 1.23,
+     "swap": 3.008
+    },
+    "notes": {},
+    "cpu_avg_pct": 35.8,
+    "cpu_max_pct": 99.0,
+    "mem_peak_gb": 5.92,
+    "disk_peak_delta_gb": 6.71,
+    "error": "Traceback (most recent call last):\n  File \"/home/user/bigtable2db/bench/run.py\", line 185, in timed\n    fn(*args, phases)\n    ~~^^^^^^^^^^^^^^^\n  File \"/home/user/bigtable2db/bench/solutions/timescale.py\", line 294, in full_refresh\n    self.swap_in(c, new)\n    ~~~~~~~~~~~~^^^^^^^^\n  File \"/home/user/bigtable2db/bench/solutions/timescale.py\", line 195, in swap_in\n    conn.execute(\"DROP TABLE IF EXISTS big_table\")\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/user/bigtable2db/.venv/lib/python3.13/site-packages/psycopg/connection.py\", line 304, in execute\n    raise ex.with_traceback(None)\npsycopg.errors.DeadlockDetected: deadlock detected\nDETAIL:  Process 157 waits for AccessExclusiveLock on relation 17893 of database 5; blocked by process 156.\nProcess 156 waits for AccessShareLock on relation 17898 of database 5; blocked by process 157.\nHINT:  See server log for query details.\n",
+    "reader": {
+     "n": 2046,
+     "p50_ms": 0.554,
+     "p95_ms": 2.361,
+     "p99_ms": 20.347,
+     "max_ms": 2988.743,
+     "mean_ms": 3.089,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 3.009,
+     "first_error": null
+    },
+    "verify": {
+     "ok": true,
+     "got": [
+      5000000,
+      2500036124.131989,
+      1252488814.4500217,
+      4999999
+     ],
+     "want": [
+      5000000,
+      2500036124.1320095,
+      1252488814.4500453,
+      4999999
+     ]
+    }
+   }
+  ],
+  "incremental": {
+   "upsert_1pct": {
+    "total_s": 7.111,
+    "phases": {
+     "stage_copy": 0.323,
+     "merge": 6.749,
+     "commit": 0.032
+    },
+    "notes": {},
+    "cpu_avg_pct": 19.8,
+    "cpu_max_pct": 23.3,
+    "mem_peak_gb": 5.39,
+    "disk_peak_delta_gb": 0.21,
+    "reader": {
+     "n": 327,
+     "p50_ms": 0.605,
+     "p95_ms": 2.093,
+     "p99_ms": 19.857,
+     "max_ms": 106.015,
+     "mean_ms": 1.635,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.126,
+     "first_error": null
+    },
+    "rows": 50000,
+    "verify": {
+     "ok": true,
+     "got": [
+      5012500,
+      2506180739.1849537,
+      1255660231.4500275,
+      5012499
+     ],
+     "want": [
+      5012500,
+      2506180739.1849794,
+      1255660231.4500375,
+      5012499
+     ]
+    }
+   },
+   "upsert_10pct": {
+    "total_s": 32.668,
+    "phases": {
+     "stage_copy": 2.194,
+     "merge": 30.325,
+     "commit": 0.145
+    },
+    "notes": {},
+    "cpu_avg_pct": 28.0,
+    "cpu_max_pct": 41.1,
+    "mem_peak_gb": 5.53,
+    "disk_peak_delta_gb": 0.74,
+    "reader": {
+     "n": 1567,
+     "p50_ms": 0.512,
+     "p95_ms": 0.912,
+     "p99_ms": 3.014,
+     "max_ms": 88.45,
+     "mean_ms": 0.689,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.109,
+     "first_error": null
+    },
+    "rows": 500000,
+    "verify": {
+     "ok": true,
+     "got": [
+      5137500,
+      2568451675.997974,
+      1286885366.2299953,
+      5137499
+     ],
+     "want": [
+      5137500,
+      2568451675.998023,
+      1286885366.2299876,
+      5137499
+     ]
+    }
+   },
+   "replace_tenant": {
+    "total_s": 6.744,
+    "phases": {
+     "delete": 1.362,
+     "copy": 5.349,
+     "commit": 0.029
+    },
+    "notes": {},
+    "cpu_avg_pct": 30.6,
+    "cpu_max_pct": 35.0,
+    "mem_peak_gb": 5.51,
+    "disk_peak_delta_gb": 0.16,
+    "rows": 257580,
+    "verify": {
+     "ok": true,
+     "got": [
+      5135880,
+      2567786667.1400347,
+      1286531952.030008,
+      5162499
+     ],
+     "want": [
+      5135880,
+      2567786667.1400175,
+      1286531952.0299716,
+      5162499
+     ]
+    }
+   }
+  },
+  "storage_after": {
+   "table": 2961465344,
+   "index_a": 951705600,
+   "index_b": 944103424,
+   "total": 4857274368,
+   "database": 8974120627,
+   "chunks": 3,
+   "data_dir_bytes": 17581784819
+  },
+  "queries_after": {
+   "point": {
+    "n": 300,
+    "p50_ms": 0.145,
+    "p95_ms": 0.183,
+    "p99_ms": 0.225,
+    "max_ms": 0.586,
+    "mean_ms": 0.152
+   },
+   "series": {
+    "n": 300,
+    "p50_ms": 0.198,
+    "p95_ms": 0.389,
+    "p99_ms": 0.893,
+    "max_ms": 3.668,
+    "mean_ms": 0.254
+   },
+   "tenant_agg": {
+    "n": 20,
+    "p50_ms": 8.559,
+    "p95_ms": 39.338,
+    "p99_ms": 231.447,
+    "max_ms": 231.447,
+    "mean_ms": 22.499
+   }
+  }
+ },
+ "ok": false,
+ "info": {
+  "image": "timescale/timescaledb:latest-pg17",
+  "server_version": "17.12",
+  "db_collation": "en_US.utf8",
+  "text_key_collation": "C",
+  "conf": {
+   "shared_buffers": "4GB",
+   "effective_cache_size": "10GB",
+   "work_mem": "64MB",
+   "maintenance_work_mem": "1GB",
+   "max_wal_size": "8GB",
+   "min_wal_size": "1GB",
+   "checkpoint_timeout": "15min",
+   "checkpoint_completion_target": "0.9",
+   "wal_compression": "lz4",
+   "max_worker_processes": "8",
+   "max_parallel_workers": "4",
+   "max_parallel_workers_per_gather": "2",
+   "max_parallel_maintenance_workers": "2",
+   "random_page_cost": "1.1",
+   "effective_io_concurrency": "200",
+   "max_connections": "100",
+   "listen_addresses": "127.0.0.1",
+   "shared_preload_libraries": "timescaledb",
+   "timescaledb.telemetry_level": "off",
+   "timescaledb.max_background_workers": "3"
+  },
+  "timescaledb_version": "2.32.1",
+  "timescaledb_license": "timescale",
+  "server_version_full": "PostgreSQL 17.12 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit",
+  "effective_non_default_settings": {
+   "DateStyle": "ISO, MDY",
+   "TimeZone": "UTC",
+   "checkpoint_completion_target": "0.9",
+   "checkpoint_timeout": "15min",
+   "default_text_search_config": "pg_catalog.english",
+   "dynamic_shared_memory_type": "posix",
+   "effective_cache_size": "10GB",
+   "effective_io_concurrency": "200",
+   "lc_messages": "en_US.utf8",
+   "lc_monetary": "en_US.utf8",
+   "lc_numeric": "en_US.utf8",
+   "lc_time": "en_US.utf8",
+   "listen_addresses": "127.0.0.1",
+   "log_timezone": "UTC",
+   "maintenance_work_mem": "1GB",
+   "max_connections": "100",
+   "max_parallel_maintenance_workers": "2",
+   "max_parallel_workers": "4",
+   "max_parallel_workers_per_gather": "2",
+   "max_wal_size": "8GB",
+   "max_worker_processes": "8",
+   "min_wal_size": "1GB",
+   "port": "55433",
+   "random_page_cost": "1.1",
+   "shared_buffers": "4GB",
+   "shared_preload_libraries": "timescaledb",
+   "timescaledb.max_background_workers": "3",
+   "timescaledb.telemetry_level": "off",
+   "wal_compression": "lz4",
+   "work_mem": "64MB"
+  },
+  "loader": {
+   "streams": 4,
+   "format": "csv (pyarrow) over COPY FROM STDIN",
+   "unit": "parquet row group"
+  },
+  "hypertable": {
+   "partitioning": "by_range(period, 7)",
+   "space_partitions": 0,
+   "index_timing": "after",
+   "index_parallel": true
+  }
+ },
+ "wall_s": 216.4
+}

@@ -1,0 +1,22 @@
+[project]
+name = "bigtable2db"
+version = "0.1.0"
+description = "Benchmark: getting one big (20M rows / ~16 GB) table into a serving database fast"
+requires-python = ">=3.11"
+dependencies = [
+    "duckdb>=1.1",
+    "pyarrow>=17",
+    "numpy",
+    "pandas>=2.2",
+    "psutil",
+    "psycopg[binary]>=3.2",
+    "adbc-driver-postgresql>=1.2",
+    "adbc-driver-manager>=1.2",
+    "sqlalchemy>=2",
+    "clickhouse-connect>=0.8",
+    "pymysql>=1.1",
+    "matplotlib>=3.9",
+]
+
+[tool.uv]
+package = false

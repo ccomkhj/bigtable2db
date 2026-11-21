@@ -1,0 +1,406 @@
+{
+ "solution": "pg_unlogged_swap",
+ "engine": "postgres",
+ "strategy": "UNLOGGED new table: 4 parallel COPY streams, concurrent index builds, atomic rename (no WAL, not crash-safe)",
+ "atomic_swap": true,
+ "scale": "5M",
+ "rows": 5000000,
+ "reps": 3,
+ "tag": "final",
+ "started_utc": "2026-11-21T20:46:52+00:00",
+ "host": {
+  "cpus": 4,
+  "cpu_model": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "mem_gb": 15.7,
+  "kernel": "6.18.44-fc-v726",
+  "python": "3.13.18"
+ },
+ "steps": {
+  "initial_load": {
+   "total_s": 16.456,
+   "phases": {
+    "copy": 9.175,
+    "index_b": 6.297,
+    "index_a": 6.896,
+    "index": 6.901,
+    "analyze": 0.358,
+    "swap": 0.002
+   },
+   "notes": {},
+   "cpu_avg_pct": 84.0,
+   "cpu_max_pct": 100.0,
+   "mem_peak_gb": 4.01,
+   "disk_peak_delta_gb": 4.85,
+   "verify": {
+    "ok": true,
+    "got": [
+     5000000,
+     2500036124.131965,
+     1252488814.4500396,
+     4999999
+    ],
+    "want": [
+     5000000,
+     2500036124.1320095,
+     1252488814.4500453,
+     4999999
+    ]
+   }
+  },
+  "storage": {
+   "table": 2568962048,
+   "index_a": 770072576,
+   "index_b": 772202496,
+   "total": 4111253504,
+   "database": 4119082675,
+   "indexes": {
+    "big_table_b": 772202496,
+    "big_table_a": 770072576
+   },
+   "data_dir_bytes": 4151716403
+  },
+  "queries": {
+   "point": {
+    "verified": true,
+    "n": 500,
+    "p50_ms": 0.098,
+    "p95_ms": 0.154,
+    "p99_ms": 0.273,
+    "max_ms": 2.13,
+    "mean_ms": 0.114
+   },
+   "series": {
+    "verified": true,
+    "n": 500,
+    "p50_ms": 0.137,
+    "p95_ms": 0.171,
+    "p99_ms": 0.201,
+    "max_ms": 0.246,
+    "mean_ms": 0.141
+   },
+   "tenant_agg": {
+    "verified": true,
+    "n": 40,
+    "p50_ms": 9.937,
+    "p95_ms": 34.126,
+    "p99_ms": 95.721,
+    "max_ms": 95.721,
+    "mean_ms": 14.903
+   },
+   "full_agg": {
+    "verified": true,
+    "n": 5,
+    "p50_ms": 591.318,
+    "p95_ms": 694.01,
+    "p99_ms": 694.01,
+    "max_ms": 694.01,
+    "mean_ms": 599.693
+   }
+  },
+  "concurrency": {
+   "n": 72784,
+   "p50_ms": 1.527,
+   "p95_ms": 2.924,
+   "p99_ms": 3.969,
+   "max_ms": 20.768,
+   "mean_ms": 1.648,
+   "threads": 8,
+   "seconds": 15.01,
+   "qps": 4849.1,
+   "errors": 0
+  },
+  "refresh": [
+   {
+    "total_s": 16.508,
+    "phases": {
+     "copy": 7.755,
+     "index_b": 6.031,
+     "index_a": 6.126,
+     "index": 6.132,
+     "analyze": 0.321,
+     "swap": 2.286
+    },
+    "notes": {},
+    "cpu_avg_pct": 72.6,
+    "cpu_max_pct": 100.0,
+    "mem_peak_gb": 4.53,
+    "disk_peak_delta_gb": 5.07,
+    "reader": {
+     "n": 858,
+     "p50_ms": 0.44,
+     "p95_ms": 4.018,
+     "p99_ms": 17.712,
+     "max_ms": 60.433,
+     "mean_ms": 1.197,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.085,
+     "first_error": null
+    },
+    "verify": {
+     "ok": true,
+     "got": [
+      5000000,
+      2500036124.1319313,
+      1252488814.4500546,
+      4999999
+     ],
+     "want": [
+      5000000,
+      2500036124.1320095,
+      1252488814.4500453,
+      4999999
+     ]
+    }
+   },
+   {
+    "total_s": 17.879,
+    "phases": {
+     "copy": 7.838,
+     "index_a": 6.708,
+     "index_b": 6.707,
+     "index": 6.714,
+     "analyze": 0.322,
+     "swap": 2.986
+    },
+    "notes": {},
+    "cpu_avg_pct": 66.7,
+    "cpu_max_pct": 100.0,
+    "mem_peak_gb": 4.93,
+    "disk_peak_delta_gb": 5.08,
+    "reader": {
+     "n": 884,
+     "p50_ms": 0.459,
+     "p95_ms": 3.212,
+     "p99_ms": 11.321,
+     "max_ms": 1008.537,
+     "mean_ms": 2.145,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 1.029,
+     "first_error": null
+    },
+    "verify": {
+     "ok": true,
+     "got": [
+      5000000,
+      2500036124.131966,
+      1252488814.4500384,
+      4999999
+     ],
+     "want": [
+      5000000,
+      2500036124.1320095,
+      1252488814.4500453,
+      4999999
+     ]
+    }
+   }
+  ],
+  "incremental": {
+   "upsert_1pct": {
+    "total_s": 1.351,
+    "phases": {
+     "stage_copy": 0.227,
+     "merge": 1.118,
+     "commit": 0.004
+    },
+    "notes": {},
+    "cpu_avg_pct": 28.4,
+    "cpu_max_pct": 30.2,
+    "mem_peak_gb": 2.87,
+    "disk_peak_delta_gb": 0.04,
+    "reader": {
+     "n": 66,
+     "p50_ms": 0.443,
+     "p95_ms": 0.708,
+     "p99_ms": 4.664,
+     "max_ms": 4.664,
+     "mean_ms": 0.524,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.022,
+     "first_error": null
+    },
+    "rows": 50000,
+    "verify": {
+     "ok": true,
+     "got": [
+      5012500,
+      2506180739.184925,
+      1255660231.4500456,
+      5012499
+     ],
+     "want": [
+      5012500,
+      2506180739.1849794,
+      1255660231.4500375,
+      5012499
+     ]
+    }
+   },
+   "upsert_10pct": {
+    "total_s": 12.495,
+    "phases": {
+     "stage_copy": 2.031,
+     "merge": 10.439,
+     "commit": 0.02
+    },
+    "notes": {},
+    "cpu_avg_pct": 27.4,
+    "cpu_max_pct": 34.1,
+    "mem_peak_gb": 4.21,
+    "disk_peak_delta_gb": 0.53,
+    "reader": {
+     "n": 601,
+     "p50_ms": 0.468,
+     "p95_ms": 0.743,
+     "p99_ms": 2.838,
+     "max_ms": 25.624,
+     "mean_ms": 0.586,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.055,
+     "first_error": null
+    },
+    "rows": 500000,
+    "verify": {
+     "ok": true,
+     "got": [
+      5137500,
+      2568451675.9979706,
+      1286885366.230002,
+      5137499
+     ],
+     "want": [
+      5137500,
+      2568451675.998023,
+      1286885366.2299876,
+      5137499
+     ]
+    }
+   },
+   "replace_tenant": {
+    "total_s": 4.038,
+    "phases": {
+     "delete": 0.32,
+     "copy": 3.714,
+     "commit": 0.0
+    },
+    "notes": {},
+    "cpu_avg_pct": 28.5,
+    "cpu_max_pct": 32.8,
+    "mem_peak_gb": 4.71,
+    "disk_peak_delta_gb": 0.16,
+    "rows": 257580,
+    "verify": {
+     "ok": true,
+     "got": [
+      5135880,
+      2567786667.139984,
+      1286531952.0300174,
+      5162499
+     ],
+     "want": [
+      5135880,
+      2567786667.1400175,
+      1286531952.0299716,
+      5162499
+     ]
+    }
+   }
+  },
+  "storage_after": {
+   "table": 2974957568,
+   "index_a": 860585984,
+   "index_b": 838696960,
+   "total": 4674256896,
+   "database": 4682192563,
+   "indexes": {
+    "big_table_b": 838696960,
+    "big_table_a": 860585984
+   },
+   "data_dir_bytes": 4714908211
+  },
+  "queries_after": {
+   "point": {
+    "n": 300,
+    "p50_ms": 0.09,
+    "p95_ms": 0.121,
+    "p99_ms": 0.267,
+    "max_ms": 0.557,
+    "mean_ms": 0.098
+   },
+   "series": {
+    "n": 300,
+    "p50_ms": 0.111,
+    "p95_ms": 0.192,
+    "p99_ms": 0.402,
+    "max_ms": 1.831,
+    "mean_ms": 0.132
+   },
+   "tenant_agg": {
+    "n": 20,
+    "p50_ms": 9.889,
+    "p95_ms": 89.392,
+    "p99_ms": 209.604,
+    "max_ms": 209.604,
+    "mean_ms": 27.511
+   }
+  }
+ },
+ "ok": true,
+ "info": {
+  "image": "postgres:17",
+  "server_version": "17.12 (Debian 17.12-1.pgdg13+1)",
+  "db_collation": "en_US.utf8",
+  "text_key_collation": "C",
+  "conf": {
+   "shared_buffers": "4GB",
+   "effective_cache_size": "10GB",
+   "work_mem": "64MB",
+   "maintenance_work_mem": "1GB",
+   "max_wal_size": "8GB",
+   "min_wal_size": "1GB",
+   "checkpoint_timeout": "15min",
+   "checkpoint_completion_target": "0.9",
+   "wal_compression": "lz4",
+   "max_worker_processes": "8",
+   "max_parallel_workers": "4",
+   "max_parallel_workers_per_gather": "2",
+   "max_parallel_maintenance_workers": "2",
+   "random_page_cost": "1.1",
+   "effective_io_concurrency": "200",
+   "max_connections": "100",
+   "listen_addresses": "127.0.0.1"
+  },
+  "load_options": {
+   "streams": 4,
+   "encoder": "csv",
+   "workers": "threads",
+   "batch_rows": 50000,
+   "arrow_threads": false,
+   "unlogged": true,
+   "single_txn": false,
+   "freeze": false,
+   "sync_commit_off": true,
+   "maintenance_work_mem": "1GB",
+   "index_workers": 1,
+   "index_concurrent": true,
+   "index_fillfactor": null,
+   "set_logged": false
+  },
+  "session_settings": {
+   "copy": {
+    "synchronous_commit": "off"
+   },
+   "index": {
+    "synchronous_commit": "off",
+    "maintenance_work_mem": "1GB",
+    "max_parallel_maintenance_workers": "1"
+   }
+  },
+  "conf_overrides": {}
+ },
+ "wall_s": 101.1
+}

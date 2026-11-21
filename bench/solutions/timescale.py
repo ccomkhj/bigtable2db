@@ -305,3 +305,99 @@ class TsHypertable(TimescaleBase):
             chunks = c.execute("SELECT count(*) FROM show_chunks('big_table')").fetchone()[0]
         return {"table": int(table) + int(toast or 0), "index_a": int(a), "index_b": int(b), "total": int(total),
                 "database": db, "chunks": chunks}
+
+
+# --------------------------------------------------------------------------- columnstore
+@register
+class TsColumnstore(TsHypertable):
+    """Hypertable converted to the TimescaleDB columnstore (compression).
+
+    Layout: segmentby tenant_id (every tenant's rows are stored together, the natural
+    filter of a multi-tenant app), orderby (item_key, period) so the business-key lookup
+    hits one ~1000-row batch through the min/max metadata, and a bloom-filter sparse index
+    on ref_path for the secondary access path (there is no B-tree over compressed rows).
+
+    Full refresh: COPY into the row-store chunks of a new hypertable, convert every chunk
+    (one connection per chunk), then create the two B-tree indexes. They are created
+    AFTER the conversion on purpose: they then only cover rows that arrive later
+    (upserts land in the row-store part of a chunk), so building them is almost free, and
+    index A is what makes INSERT ... ON CONFLICT possible against compressed chunks.
+
+    Maintenance: plain SQL. An upsert decompresses the batches that contain conflicting
+    keys; the changed rows stay in the row store until the chunk is converted again
+    (in production: the columnstore policy job, not measured here)."""
+
+    name = "ts_columnstore"
+    port = 55435
+    strategy = ("hypertable + columnstore: segmentby tenant_id, orderby (item_key, period), bloom sparse index on "
+                "ref_path; 4 parallel COPY streams, convert chunks in parallel, rename swap")
+    atomic_swap = True
+    chunk_interval = 5          # 4 chunks -> 4 conversions in parallel on 4 vCPUs
+    #: "post" = COPY to row store, then compress_chunk();  "direct" = COPY straight into the columnstore
+    load_mode = "post"
+
+    COLUMNSTORE = ("timescaledb.enable_columnstore, timescaledb.segmentby = 'tenant_id', "
+                   "timescaledb.orderby = 'item_key, period', "
+                   "timescaledb.sparse_index = 'bloom(ref_path), minmax(item_key), minmax(period)'")
+
+    def info(self) -> dict:
+        out = super().info()
+        out["columnstore"] = {"settings": self.COLUMNSTORE, "load_mode": self.load_mode}
+        return out
+
+    def full_refresh(self, ds: Dataset, phases: Phases) -> None:
+        with self.connect() as c:
+            new = self.new_name(c)
+            self.create_hypertable(c, new)
+            c.execute(f"ALTER TABLE {new} SET ({self.COLUMNSTORE})")
+            if self.load_mode == "direct":
+                with phases("copy_direct_columnstore"):
+                    parallel_copy(self.dsn, new, ds.base_files, self.streams,
+                                  session_sql=["SET timescaledb.enable_direct_compress_copy = on"])
+            else:
+                with phases("copy"):
+                    parallel_copy(self.dsn, new, ds.base_files, self.streams)
+                with phases("convert_to_columnstore"):
+                    chunks = [r[0] for r in c.execute(f"SELECT show_chunks('{new}')::text").fetchall()]
+                    run_parallel(self.dsn, [[f"SELECT compress_chunk('{ch}')"] for ch in chunks], self.streams)
+            with phases("index"):
+                c.execute(index_a_sql(new))
+                c.execute(index_b_sql(new))
+            with phases("analyze"):
+                c.execute(f"ANALYZE {new}")
+            with phases("swap"):
+                self.swap_in(c, new)
+
+    def upsert(self, ds: Dataset, delta: Path, phases: Phases) -> None:
+        sets = ", ".join(f"{col} = EXCLUDED.{col}" for col in spec.COLUMN_NAMES if col not in spec.KEY)
+        with self.connect(autocommit=False) as c:
+            c.execute("SET timescaledb.max_tuples_decompressed_per_dml_transaction = 0")
+            with phases("stage_copy"):
+                c.execute(create_table_sql("delta_stage", collate_c=self.collate_c).replace(
+                    "CREATE TABLE", "CREATE TEMP TABLE") + " ON COMMIT DROP")
+                with c.cursor() as cur, cur.copy(f"COPY delta_stage ({COLS}) FROM STDIN (FORMAT csv)") as cp:
+                    opts = pacsv.WriteOptions(include_header=False, quoting_style="needed")
+                    for batch in pq.ParquetFile(delta).iter_batches(batch_size=50_000):
+                        buf = io.BytesIO()
+                        pacsv.write_csv(batch, buf, write_options=opts)
+                        cp.write(buf.getvalue())
+            with phases("merge"):
+                c.execute(f"INSERT INTO big_table SELECT * FROM delta_stage "
+                          f"ON CONFLICT (tenant_id, item_key, period) DO UPDATE SET {sets}")
+            with phases("commit"):
+                c.commit()
+
+    def replace_tenant(self, ds: Dataset, phases: Phases) -> None:
+        with self.connect(autocommit=False) as c:
+            c.execute("SET timescaledb.max_tuples_decompressed_per_dml_transaction = 0")
+            with phases("delete"):
+                c.execute("DELETE FROM big_table WHERE tenant_id = %s", [ds.replace_tenant_id])
+            with phases("copy"):
+                with c.cursor() as cur, cur.copy(f"COPY big_table ({COLS}) FROM STDIN (FORMAT csv)") as cp:
+                    opts = pacsv.WriteOptions(include_header=False, quoting_style="needed")
+                    for batch in pq.ParquetFile(ds.replace_tenant_file).iter_batches(batch_size=50_000):
+                        buf = io.BytesIO()
+                        pacsv.write_csv(batch, buf, write_options=opts)
+                        cp.write(buf.getvalue())
+            with phases("commit"):
+                c.commit()

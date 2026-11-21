@@ -1,0 +1,219 @@
+{
+ "solution": "ts_columnstore",
+ "engine": "timescaledb",
+ "strategy": "hypertable + columnstore: segmentby tenant_id, orderby (item_key, period), bloom sparse index on ref_path; 4 parallel COPY streams, convert chunks in parallel, rename swap",
+ "atomic_swap": true,
+ "scale": "1M",
+ "rows": 1000000,
+ "reps": 2,
+ "tag": "dev_direct",
+ "started_utc": "2026-11-21T20:05:34+00:00",
+ "host": {
+  "cpus": 4,
+  "cpu_model": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "mem_gb": 15.7,
+  "kernel": "6.18.44-fc-v726",
+  "python": "3.13.18"
+ },
+ "steps": {
+  "initial_load": {
+   "total_s": 16.738,
+   "phases": {
+    "copy_direct_columnstore": 15.746,
+    "index": 0.902,
+    "analyze": 0.062,
+    "swap": 0.004
+   },
+   "notes": {},
+   "cpu_avg_pct": 71.6,
+   "cpu_max_pct": 100.0,
+   "mem_peak_gb": 4.05,
+   "disk_peak_delta_gb": 1.66,
+   "verify": {
+    "ok": true,
+    "got": [
+     1000000,
+     500603958.6349999,
+     250423628.8799999,
+     999999
+    ],
+    "want": [
+     1000000,
+     500603958.63499516,
+     250423628.8799981,
+     999999
+    ]
+   }
+  },
+  "storage": {
+   "table": 236314624,
+   "index_a": 49152,
+   "index_b": 49152,
+   "total": 240107520,
+   "database": 250730163,
+   "chunks": 5,
+   "data_dir_bytes": 536595023
+  },
+  "queries": {
+   "point": {
+    "verified": true,
+    "n": 500,
+    "p50_ms": 2.284,
+    "p95_ms": 4.074,
+    "p99_ms": 5.255,
+    "max_ms": 17.783,
+    "mean_ms": 2.502
+   },
+   "series": {
+    "verified": true,
+    "n": 500,
+    "p50_ms": 37.347,
+    "p95_ms": 51.513,
+    "p99_ms": 64.893,
+    "max_ms": 74.889,
+    "mean_ms": 38.815
+   },
+   "tenant_agg": {
+    "verified": true,
+    "n": 40,
+    "p50_ms": 1.316,
+    "p95_ms": 1.978,
+    "p99_ms": 6.874,
+    "max_ms": 6.874,
+    "mean_ms": 1.486
+   },
+   "full_agg": {
+    "verified": true,
+    "n": 5,
+    "p50_ms": 102.046,
+    "p95_ms": 112.684,
+    "p99_ms": 112.684,
+    "max_ms": 112.684,
+    "mean_ms": 101.638
+   }
+  },
+  "refresh": [
+   {
+    "total_s": 20.235,
+    "phases": {
+     "copy_direct_columnstore": 18.634,
+     "index": 1.282,
+     "analyze": 0.084,
+     "swap": 0.217
+    },
+    "notes": {},
+    "cpu_avg_pct": 85.2,
+    "cpu_max_pct": 100.0,
+    "mem_peak_gb": 4.12,
+    "disk_peak_delta_gb": 1.56,
+    "reader": {
+     "n": 839,
+     "p50_ms": 4.006,
+     "p95_ms": 17.156,
+     "p99_ms": 37.758,
+     "max_ms": 77.278,
+     "mean_ms": 6.149,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.098,
+     "first_error": null
+    },
+    "verify": {
+     "ok": true,
+     "got": [
+      1000000,
+      500603958.6349997,
+      250423628.87999982,
+      999999
+     ],
+     "want": [
+      1000000,
+      500603958.63499516,
+      250423628.8799981,
+      999999
+     ]
+    }
+   }
+  ]
+ },
+ "ok": true,
+ "info": {
+  "image": "timescale/timescaledb:latest-pg17",
+  "server_version": "17.12",
+  "db_collation": "en_US.utf8",
+  "text_key_collation": "C",
+  "conf": {
+   "shared_buffers": "4GB",
+   "effective_cache_size": "10GB",
+   "work_mem": "64MB",
+   "maintenance_work_mem": "1GB",
+   "max_wal_size": "8GB",
+   "min_wal_size": "1GB",
+   "checkpoint_timeout": "15min",
+   "checkpoint_completion_target": "0.9",
+   "wal_compression": "lz4",
+   "max_worker_processes": "8",
+   "max_parallel_workers": "4",
+   "max_parallel_workers_per_gather": "2",
+   "max_parallel_maintenance_workers": "2",
+   "random_page_cost": "1.1",
+   "effective_io_concurrency": "200",
+   "max_connections": "100",
+   "listen_addresses": "127.0.0.1",
+   "shared_preload_libraries": "timescaledb",
+   "timescaledb.telemetry_level": "off",
+   "timescaledb.max_background_workers": "3"
+  },
+  "timescaledb_version": "2.32.1",
+  "timescaledb_license": "timescale",
+  "server_version_full": "PostgreSQL 17.12 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit",
+  "effective_non_default_settings": {
+   "DateStyle": "ISO, MDY",
+   "TimeZone": "UTC",
+   "checkpoint_completion_target": "0.9",
+   "checkpoint_timeout": "15min",
+   "default_text_search_config": "pg_catalog.english",
+   "dynamic_shared_memory_type": "posix",
+   "effective_cache_size": "10GB",
+   "effective_io_concurrency": "200",
+   "lc_messages": "en_US.utf8",
+   "lc_monetary": "en_US.utf8",
+   "lc_numeric": "en_US.utf8",
+   "lc_time": "en_US.utf8",
+   "listen_addresses": "127.0.0.1",
+   "log_timezone": "UTC",
+   "maintenance_work_mem": "1GB",
+   "max_connections": "100",
+   "max_parallel_maintenance_workers": "2",
+   "max_parallel_workers": "4",
+   "max_parallel_workers_per_gather": "2",
+   "max_wal_size": "8GB",
+   "max_worker_processes": "8",
+   "min_wal_size": "1GB",
+   "port": "55435",
+   "random_page_cost": "1.1",
+   "shared_buffers": "4GB",
+   "shared_preload_libraries": "timescaledb",
+   "timescaledb.max_background_workers": "3",
+   "timescaledb.telemetry_level": "off",
+   "wal_compression": "lz4",
+   "work_mem": "64MB"
+  },
+  "loader": {
+   "streams": 4,
+   "format": "csv (pyarrow) over COPY FROM STDIN",
+   "unit": "parquet row group"
+  },
+  "hypertable": {
+   "partitioning": "by_range(period, 5)",
+   "space_partitions": 0,
+   "index_timing": "after",
+   "index_parallel": true
+  },
+  "columnstore": {
+   "settings": "timescaledb.enable_columnstore, timescaledb.segmentby = 'tenant_id', timescaledb.orderby = 'item_key, period', timescaledb.sparse_index = 'bloom(ref_path), minmax(item_key), minmax(period)'",
+   "load_mode": "direct"
+  }
+ },
+ "wall_s": 67.9
+}

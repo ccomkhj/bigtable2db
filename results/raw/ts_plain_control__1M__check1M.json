@@ -1,0 +1,375 @@
+{
+ "solution": "ts_plain_control",
+ "engine": "timescaledb",
+ "strategy": "CONTROL: plain PG table in the TimescaleDB image; 4 parallel COPY streams, indexes after load, rename swap",
+ "atomic_swap": true,
+ "scale": "1M",
+ "rows": 1000000,
+ "reps": 2,
+ "tag": "check1M",
+ "started_utc": "2026-11-21T20:07:41+00:00",
+ "host": {
+  "cpus": 4,
+  "cpu_model": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "mem_gb": 15.7,
+  "kernel": "6.18.44-fc-v726",
+  "python": "3.13.18"
+ },
+ "steps": {
+  "initial_load": {
+   "total_s": 10.099,
+   "phases": {
+    "copy": 7.892,
+    "index": 1.777,
+    "analyze": 0.413,
+    "swap": 0.006
+   },
+   "notes": {},
+   "cpu_avg_pct": 39.8,
+   "cpu_max_pct": 97.5,
+   "mem_peak_gb": 2.69,
+   "disk_peak_delta_gb": 9.56,
+   "verify": {
+    "ok": true,
+    "got": [
+     1000000,
+     500603958.63499296,
+     250423628.87999672,
+     999999
+    ],
+    "want": [
+     1000000,
+     500603958.63499516,
+     250423628.8799981,
+     999999
+    ]
+   }
+  },
+  "storage": {
+   "table": 513761280,
+   "index_a": 154042368,
+   "index_b": 154501120,
+   "total": 822304768,
+   "database": 831698611,
+   "indexes": {
+    "big_table_b": 154501120,
+    "big_table_a": 154042368
+   },
+   "data_dir_bytes": 1402776143
+  },
+  "queries": {
+   "point": {
+    "verified": true,
+    "n": 500,
+    "p50_ms": 0.15,
+    "p95_ms": 0.314,
+    "p99_ms": 0.448,
+    "max_ms": 0.703,
+    "mean_ms": 0.176
+   },
+   "series": {
+    "verified": true,
+    "n": 500,
+    "p50_ms": 0.162,
+    "p95_ms": 0.331,
+    "p99_ms": 0.547,
+    "max_ms": 4.328,
+    "mean_ms": 0.206
+   },
+   "tenant_agg": {
+    "verified": true,
+    "n": 40,
+    "p50_ms": 1.536,
+    "p95_ms": 3.894,
+    "p99_ms": 19.75,
+    "max_ms": 19.75,
+    "mean_ms": 2.363
+   },
+   "full_agg": {
+    "verified": true,
+    "n": 5,
+    "p50_ms": 105.763,
+    "p95_ms": 109.588,
+    "p99_ms": 109.588,
+    "max_ms": 109.588,
+    "mean_ms": 100.548
+   }
+  },
+  "concurrency": {
+   "n": 95996,
+   "p50_ms": 0.976,
+   "p95_ms": 3.11,
+   "p99_ms": 4.799,
+   "max_ms": 169.193,
+   "mean_ms": 1.249,
+   "threads": 8,
+   "seconds": 15.0,
+   "qps": 6397.8,
+   "errors": 0
+  },
+  "refresh": [
+   {
+    "total_s": 8.625,
+    "phases": {
+     "copy": 4.944,
+     "index": 2.867,
+     "analyze": 0.391,
+     "swap": 0.406
+    },
+    "notes": {},
+    "cpu_avg_pct": 81.7,
+    "cpu_max_pct": 98.0,
+    "mem_peak_gb": 4.28,
+    "disk_peak_delta_gb": 1.36,
+    "reader": {
+     "n": 486,
+     "p50_ms": 0.5,
+     "p95_ms": 3.494,
+     "p99_ms": 14.206,
+     "max_ms": 21.215,
+     "mean_ms": 1.107,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.059,
+     "first_error": null
+    },
+    "verify": {
+     "ok": true,
+     "got": [
+      1000000,
+      500603958.63499475,
+      250423628.88000324,
+      999999
+     ],
+     "want": [
+      1000000,
+      500603958.63499516,
+      250423628.8799981,
+      999999
+     ]
+    }
+   }
+  ],
+  "incremental": {
+   "upsert_1pct": {
+    "total_s": 0.43,
+    "phases": {
+     "stage_copy": 0.102,
+     "merge": 0.312,
+     "commit": 0.008
+    },
+    "notes": {},
+    "cpu_avg_pct": null,
+    "cpu_max_pct": null,
+    "mem_peak_gb": 0.0,
+    "disk_peak_delta_gb": 0.0,
+    "reader": {
+     "n": 20,
+     "p50_ms": 0.51,
+     "p95_ms": 0.989,
+     "p99_ms": 33.509,
+     "max_ms": 33.509,
+     "mean_ms": 2.232,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.034,
+     "first_error": null
+    },
+    "rows": 10000,
+    "verify": {
+     "ok": true,
+     "got": [
+      1002500,
+      501796953.90199286,
+      251061078.32999688,
+      1002499
+     ],
+     "want": [
+      1002500,
+      501796953.9020016,
+      251061078.3299999,
+      1002499
+     ]
+    }
+   },
+   "upsert_10pct": {
+    "total_s": 4.597,
+    "phases": {
+     "stage_copy": 0.645,
+     "merge": 3.894,
+     "commit": 0.053
+    },
+    "notes": {},
+    "cpu_avg_pct": 63.9,
+    "cpu_max_pct": 83.0,
+    "mem_peak_gb": 5.46,
+    "disk_peak_delta_gb": 0.34,
+    "reader": {
+     "n": 219,
+     "p50_ms": 0.534,
+     "p95_ms": 1.86,
+     "p99_ms": 4.52,
+     "max_ms": 12.662,
+     "mean_ms": 0.765,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.034,
+     "first_error": null
+    },
+    "rows": 100000,
+    "verify": {
+     "ok": true,
+     "got": [
+      1027500,
+      514125927.1129953,
+      257229954.87999913,
+      1027499
+     ],
+     "want": [
+      1027500,
+      514125927.1129985,
+      257229954.87999952,
+      1027499
+     ]
+    }
+   },
+   "replace_tenant": {
+    "total_s": 1.283,
+    "phases": {
+     "delete": 0.072,
+     "copy": 1.174,
+     "commit": 0.033
+    },
+    "notes": {},
+    "cpu_avg_pct": 41.2,
+    "cpu_max_pct": 51.2,
+    "mem_peak_gb": 4.08,
+    "disk_peak_delta_gb": 0.0,
+    "rows": 52100,
+    "verify": {
+     "ok": true,
+     "got": [
+      1027280,
+      514000766.0309988,
+      257247966.52999938,
+      1032499
+     ],
+     "want": [
+      1027280,
+      514000766.0309985,
+      257247966.52999955,
+      1032499
+     ]
+    }
+   }
+  },
+  "storage_after": {
+   "table": 596295680,
+   "index_a": 172171264,
+   "index_b": 167657472,
+   "total": 936124416,
+   "database": 945600179,
+   "indexes": {
+    "big_table_a": 172171264,
+    "big_table_b": 167657472
+   },
+   "data_dir_bytes": 2221451855
+  },
+  "queries_after": {
+   "point": {
+    "n": 300,
+    "p50_ms": 0.125,
+    "p95_ms": 0.165,
+    "p99_ms": 0.232,
+    "max_ms": 0.349,
+    "mean_ms": 0.128
+   },
+   "series": {
+    "n": 300,
+    "p50_ms": 0.147,
+    "p95_ms": 0.202,
+    "p99_ms": 0.323,
+    "max_ms": 0.471,
+    "mean_ms": 0.154
+   },
+   "tenant_agg": {
+    "n": 20,
+    "p50_ms": 1.807,
+    "p95_ms": 6.231,
+    "p99_ms": 41.218,
+    "max_ms": 41.218,
+    "mean_ms": 4.192
+   }
+  }
+ },
+ "ok": true,
+ "info": {
+  "image": "timescale/timescaledb:latest-pg17",
+  "server_version": "17.12",
+  "db_collation": "en_US.utf8",
+  "text_key_collation": "C",
+  "conf": {
+   "shared_buffers": "4GB",
+   "effective_cache_size": "10GB",
+   "work_mem": "64MB",
+   "maintenance_work_mem": "1GB",
+   "max_wal_size": "8GB",
+   "min_wal_size": "1GB",
+   "checkpoint_timeout": "15min",
+   "checkpoint_completion_target": "0.9",
+   "wal_compression": "lz4",
+   "max_worker_processes": "8",
+   "max_parallel_workers": "4",
+   "max_parallel_workers_per_gather": "2",
+   "max_parallel_maintenance_workers": "2",
+   "random_page_cost": "1.1",
+   "effective_io_concurrency": "200",
+   "max_connections": "100",
+   "listen_addresses": "127.0.0.1",
+   "shared_preload_libraries": "timescaledb",
+   "timescaledb.telemetry_level": "off",
+   "timescaledb.max_background_workers": "3"
+  },
+  "timescaledb_version": "2.32.1",
+  "timescaledb_license": "timescale",
+  "server_version_full": "PostgreSQL 17.12 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit",
+  "effective_non_default_settings": {
+   "DateStyle": "ISO, MDY",
+   "TimeZone": "UTC",
+   "checkpoint_completion_target": "0.9",
+   "checkpoint_timeout": "15min",
+   "default_text_search_config": "pg_catalog.english",
+   "dynamic_shared_memory_type": "posix",
+   "effective_cache_size": "10GB",
+   "effective_io_concurrency": "200",
+   "lc_messages": "en_US.utf8",
+   "lc_monetary": "en_US.utf8",
+   "lc_numeric": "en_US.utf8",
+   "lc_time": "en_US.utf8",
+   "listen_addresses": "127.0.0.1",
+   "log_timezone": "UTC",
+   "maintenance_work_mem": "1GB",
+   "max_connections": "100",
+   "max_parallel_maintenance_workers": "2",
+   "max_parallel_workers": "4",
+   "max_parallel_workers_per_gather": "2",
+   "max_wal_size": "8GB",
+   "max_worker_processes": "8",
+   "min_wal_size": "1GB",
+   "port": "55433",
+   "random_page_cost": "1.1",
+   "shared_buffers": "4GB",
+   "shared_preload_libraries": "timescaledb",
+   "timescaledb.max_background_workers": "3",
+   "timescaledb.telemetry_level": "off",
+   "wal_compression": "lz4",
+   "work_mem": "64MB"
+  },
+  "loader": {
+   "streams": 4,
+   "format": "csv (pyarrow) over COPY FROM STDIN",
+   "unit": "parquet row group"
+  }
+ },
+ "wall_s": 49.2
+}

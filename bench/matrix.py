@@ -21,8 +21,17 @@ from .solutions import load_all
 
 # Total full loads per run (1 initial + N-1 refreshes under read load).
 DEFAULT_REPS = 3
-# Slow baselines get fewer repetitions; their variance is irrelevant next to their runtime.
-REPS = {"pg_naive_insert": 1, "pg_truncate_copy": 2}
+# Slow solutions get fewer repetitions; their variance is irrelevant next to their runtime.
+REPS = {"pg_naive_insert": 1, "pg_truncate_copy": 2, "pg_copy_swap": 2, "mysql_load_swap": 2}
+# Per-scale exceptions, each explained in README.md ("How to read the numbers").
+#   * load-only: these differ from pg_parallel_swap only in HOW the table is loaded; the resulting
+#     table is the same, so queries / maintenance are not re-measured at 20M.
+#   * skipped at 20M: controls and duplicates that exist to isolate one variable at 5M.
+#   * mysql at 20M: one load only. Two table copies + binlog + redo do not fit on this disk.
+LOAD_ONLY_20M = {"pg_naive_insert", "pg_copy_swap", "pg_unlogged_swap", "pg_unlogged_setlogged",
+                 "pg_walminimal_swap"}
+SKIP_20M = {"pg_incremental", "ts_plain_control"}
+REPS_20M = {"mysql_load_swap": 1}
 TIMEOUT_S = {"5M": 60 * 60, "20M": 150 * 60}
 LOG_DIR = spec.WORK_ROOT.parent / "logs"
 
@@ -44,6 +53,14 @@ def main():
                 print(f"[matrix] skip {name} {scale} (exists)", flush=True)
                 continue
             reps = a.reps or REPS.get(name, DEFAULT_REPS)
+            steps = None
+            if scale == "20M":
+                if name in SKIP_20M and not a.solutions:
+                    print(f"[matrix] skip {name} {scale} (not part of the 20M matrix)", flush=True)
+                    continue
+                reps = a.reps or REPS_20M.get(name, reps)
+                if name in LOAD_ONLY_20M:
+                    steps = "initial_load,refresh"
             log = LOG_DIR / f"{name}__{scale}__{a.tag}.log"
             t0 = time.time()
             print(f"[matrix] start {name} {scale} reps={reps}", flush=True)
@@ -51,7 +68,7 @@ def main():
                 try:
                     rc = subprocess.run(
                         [sys.executable, "-m", "bench.run", "--solution", name, "--scale", scale,
-                         "--reps", str(reps), "--tag", a.tag],
+                         "--reps", str(reps), "--tag", a.tag] + (["--steps", steps] if steps else []),
                         stdout=lf, stderr=subprocess.STDOUT, timeout=TIMEOUT_S.get(scale, 3600)).returncode
                 except subprocess.TimeoutExpired:
                     rc = "timeout"

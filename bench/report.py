@@ -172,7 +172,8 @@ def _legend(ax, fams, **kw):
     from matplotlib.lines import Line2D
     hs = [Line2D([0], [0], marker="o", linestyle="", markersize=7, markerfacecolor=FAMILY_COLOR[f],
                  markeredgecolor=SURFACE, label=FAMILY_LABEL[f]) for f in FAMILY_ORDER if f in fams]
-    leg = ax.legend(handles=hs, frameon=False, fontsize=9, labelcolor=INK2, **kw)
+    leg = ax.legend(handles=hs, frameon=True, facecolor=SURFACE, edgecolor=SURFACE, framealpha=1, fontsize=9,
+                    labelcolor=INK2, **kw)
     return leg
 
 
@@ -197,9 +198,11 @@ def chart_refresh(rows: list[dict], scale: str, path: Path):
     ax.set_yticklabels([r["solution"] for r in rs], fontsize=9, color=INK)
     ax.set_xscale("log")
     xmax = max(max(r["initial_load_s"], r["refresh_max_s"] or 0) for r in rs)
-    ax.set_xlim(min(r["headline_s"] for r in rs) / 1.6, xmax * 2.6)
+    xmin = min(min(r["initial_load_s"], r["refresh_min_s"] or 1e9) for r in rs)
+    ax.set_xlim(xmin / 1.6, max(xmax * 2.6, TARGET_S * 2.2))
+    ax.set_ylim(-0.7, len(rs) - 0.3)
     ax.axvline(TARGET_S, color=INK2, linewidth=1, linestyle=(0, (4, 3)))
-    ax.text(TARGET_S, len(rs) - 0.35, "5-minute target", fontsize=8.5, color=INK2, ha="center", va="bottom")
+    ax.text(TARGET_S / 1.07, -0.45, "5-minute target", fontsize=8.5, color=INK2, ha="right", va="center")
     ticks = [t for t in (5, 10, 30, 60, 120, 300, 600, 1800, 3600) if ax.get_xlim()[0] <= t <= ax.get_xlim()[1]]
     ax.set_xticks(ticks)
     ax.set_xticklabels([fmt_t(t).replace(" 00 s", "") for t in ticks])
@@ -207,7 +210,7 @@ def chart_refresh(rows: list[dict], scale: str, path: Path):
     ax.set_title(f"Full refresh of the {scale}-row table until it is queryable (log scale)\n"
                  "dot = median refresh over the live table; line = range of all loads",
                  fontsize=10.5, color=INK, loc="left")
-    _legend(ax, {r["engine"] for r in rs}, loc="lower right")
+    _legend(ax, {r["engine"] for r in rs}, loc="upper right")
     fig.tight_layout()
     fig.savefig(path, facecolor=SURFACE)
     plt.close(fig)

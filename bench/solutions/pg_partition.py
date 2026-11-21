@@ -56,7 +56,7 @@ from .. import spec
 from . import register
 from .base import Client, Dataset, Phases
 from .pg_common import (PG_QUERIES, PgClient, PostgresBase, copy_parquet, create_table_sql, index_a_sql,
-                        index_b_sql)
+                        index_b_sql, rename_swap)
 
 COLS = ", ".join(spec.COLUMN_NAMES)
 KEY_COLS = list(spec.KEY)
@@ -512,12 +512,7 @@ class PgPartitionSwap(_MaintBase):
                 c.execute(index_a_sql(gen))
                 c.execute(index_b_sql(gen))
             with phases("swap"):
-                with c.transaction():
-                    c.execute("SET LOCAL lock_timeout = '30s'")
-                    c.execute("DROP TABLE IF EXISTS big_table")
-                    c.execute(f"ALTER TABLE {gen} RENAME TO big_table")
-                    c.execute(f"ALTER INDEX {gen}_a RENAME TO big_table_a")
-                    c.execute(f"ALTER INDEX {gen}_b RENAME TO big_table_b")
+                rename_swap(c, gen)   # renames only; the old generation is dropped after the commit
             c.execute("SELECT pg_advisory_unlock(%s)", [MAINT_LOCK])
 
     # ---- replace one tenant = exchange one partition ----------------------------

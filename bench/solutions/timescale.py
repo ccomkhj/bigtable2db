@@ -27,7 +27,7 @@ from .. import dockerutil as du
 from .. import spec
 from . import register
 from .base import Client, Dataset, Phases
-from .pg_common import PG_BASE_CONF, PG_QUERIES, PgClient, PostgresBase, create_table_sql
+from .pg_common import PG_BASE_CONF, PG_QUERIES, PgClient, PostgresBase, create_table_sql, rename_swap
 
 # What TimescaleDB needs on top of PG_BASE_CONF. Nothing else differs from the
 # vanilla PostgreSQL solutions (timescaledb-tune is disabled with NO_TS_TUNE).
@@ -188,14 +188,10 @@ class TimescaleBase(PostgresBase):
         return "big_table_new"
 
     def swap_in(self, conn: psycopg.Connection, new: str) -> None:
-        """DROP old + RENAME new in one transaction. Works unchanged for hypertables:
-        chunks live in _timescaledb_internal and are not renamed."""
-        with conn.transaction():
-            conn.execute("SET LOCAL lock_timeout = '30s'")
-            conn.execute("DROP TABLE IF EXISTS big_table")
-            conn.execute(f"ALTER TABLE {new} RENAME TO big_table")
-            conn.execute(f"ALTER INDEX IF EXISTS {new}_a RENAME TO big_table_a")
-            conn.execute(f"ALTER INDEX IF EXISTS {new}_b RENAME TO big_table_b")
+        """Rename swap, old hypertable dropped after the commit (see pg_common.rename_swap).
+        The first version of this benchmark dropped the old hypertable inside the swap
+        transaction and deadlocked with a concurrent reader at 5M rows."""
+        rename_swap(conn, new)
 
 
 def index_a_sql(table: str) -> str:

@@ -94,6 +94,32 @@ def copy_parquet(conn: psycopg.Connection, table: str, files: Iterable[Path]) ->
                 cp.write(chunk)
 
 
+def rename_swap(conn: psycopg.Connection, new: str) -> None:
+    """Atomically make table `new` (with indexes new_a / new_b) the live big_table.
+
+    The swap transaction only RENAMES (catalog updates, milliseconds); the old table is
+    dropped after the commit, when no reader can reach it any more. Dropping it inside
+    the swap transaction would hold the ACCESS EXCLUSIVE lock for as long as the DROP
+    takes (measured: ~1 s reader stall for a 4 GB table), and on a TimescaleDB hypertable
+    it can deadlock with a reader, because DROP locks chunks before the parent while
+    readers lock the parent first. LOCK TABLE up front fixes the lock order in both steps."""
+    conn.execute("DROP TABLE IF EXISTS big_table_old")        # leftover of a crashed run
+    with conn.transaction():
+        conn.execute("SET LOCAL lock_timeout = '30s'")
+        if conn.execute("SELECT to_regclass('big_table')").fetchone()[0] is not None:
+            conn.execute("LOCK TABLE big_table IN ACCESS EXCLUSIVE MODE")
+            conn.execute("ALTER TABLE big_table RENAME TO big_table_old")
+            conn.execute("ALTER INDEX IF EXISTS big_table_a RENAME TO big_table_old_a")
+            conn.execute("ALTER INDEX IF EXISTS big_table_b RENAME TO big_table_old_b")
+        conn.execute(f"ALTER TABLE {new} RENAME TO big_table")
+        conn.execute(f"ALTER INDEX IF EXISTS {new}_a RENAME TO big_table_a")
+        conn.execute(f"ALTER INDEX IF EXISTS {new}_b RENAME TO big_table_b")
+    with conn.transaction():
+        if conn.execute("SELECT to_regclass('big_table_old')").fetchone()[0] is not None:
+            conn.execute("LOCK TABLE big_table_old IN ACCESS EXCLUSIVE MODE")
+            conn.execute("DROP TABLE big_table_old")
+
+
 class PgClient(Client):
     def __init__(self, dsn: str, queries: dict[str, str] | None = None):
         self.conn = psycopg.connect(dsn, autocommit=True)
@@ -193,14 +219,7 @@ class PostgresBase(Solution):
         return conn.execute("SELECT to_regclass(%s)", [name]).fetchone()[0] is not None
 
     def swap_in(self, conn: psycopg.Connection, new: str) -> None:
-        """Atomically make table `new` (with indexes new_a / new_b) the live big_table.
-        Runs in one short transaction; readers block only for the catalog update."""
-        with conn.transaction():
-            conn.execute("SET LOCAL lock_timeout = '30s'")
-            conn.execute("DROP TABLE IF EXISTS big_table")
-            conn.execute(f"ALTER TABLE {new} RENAME TO big_table")
-            conn.execute(f"ALTER INDEX {new}_a RENAME TO big_table_a")
-            conn.execute(f"ALTER INDEX {new}_b RENAME TO big_table_b")
+        rename_swap(conn, new)
 
     # ---- default incremental maintenance (plain SQL, works on any Postgres) --
     def upsert(self, ds: Dataset, delta: Path, phases: Phases) -> None:

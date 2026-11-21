@@ -1,0 +1,144 @@
+{
+ "solution": "duckdb_parquet",
+ "engine": "duckdb",
+ "strategy": "publish sorted zstd Parquet snapshot (table by business key in tenant-group files + narrow projection sorted by ref_path), switch manifest pointer atomically; DuckDB in-process",
+ "atomic_swap": true,
+ "scale": "1M",
+ "rows": 1000000,
+ "reps": 2,
+ "tag": "tune",
+ "started_utc": "2026-11-21T18:46:10+00:00",
+ "host": {
+  "cpus": 4,
+  "cpu_model": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "mem_gb": 15.7,
+  "kernel": "6.18.44-fc-v726",
+  "python": "3.13.18"
+ },
+ "steps": {
+  "initial_load": {
+   "total_s": 2.508,
+   "phases": {
+    "plan": 0.114,
+    "a_sort_write": 1.602,
+    "b_plan": 0.0,
+    "b_sort_write": 0.693,
+    "b_bounds": 0.009,
+    "fsync": 0.011,
+    "publish": 0.004
+   },
+   "notes": {
+    "a_sort_passes": 1,
+    "a_files": 53,
+    "b_sort_passes": 1,
+    "b_files": 4
+   },
+   "cpu_avg_pct": 93.5,
+   "cpu_max_pct": 99.0,
+   "mem_peak_gb": 5.63,
+   "disk_peak_delta_gb": 0.19,
+   "verify": {
+    "ok": true,
+    "got": [
+     1000000,
+     500603958.6349989,
+     250423628.88000238,
+     999999
+    ],
+    "want": [
+     1000000,
+     500603958.63499516,
+     250423628.8799981,
+     999999
+    ]
+   }
+  },
+  "storage": {
+   "table": 83940286,
+   "index_a": 0,
+   "index_b": 20720449,
+   "total": 104660735,
+   "files_a": 53,
+   "files_b": 4,
+   "note": "index_a = sort order of the table files (no extra bytes); index_b = sorted projection; data_dir_bytes also contains the previous snapshot, kept until the next publish",
+   "data_dir_bytes": 104666557
+  },
+  "queries": {
+   "point": {
+    "verified": true,
+    "n": 500,
+    "p50_ms": 6.168,
+    "p95_ms": 11.597,
+    "p99_ms": 14.486,
+    "max_ms": 20.525,
+    "mean_ms": 6.622
+   },
+   "series": {
+    "verified": true,
+    "n": 500,
+    "p50_ms": 3.157,
+    "p95_ms": 5.877,
+    "p99_ms": 9.171,
+    "max_ms": 30.684,
+    "mean_ms": 3.64
+   },
+   "tenant_agg": {
+    "verified": true,
+    "n": 40,
+    "p50_ms": 2.723,
+    "p95_ms": 4.007,
+    "p99_ms": 5.326,
+    "max_ms": 5.326,
+    "mean_ms": 2.91
+   },
+   "full_agg": {
+    "verified": true,
+    "n": 5,
+    "p50_ms": 30.767,
+    "p95_ms": 32.919,
+    "p99_ms": 32.919,
+    "max_ms": 32.919,
+    "mean_ms": 30.95
+   }
+  },
+  "concurrency": {
+   "n": 7298,
+   "p50_ms": 13.015,
+   "p95_ms": 38.12,
+   "p99_ms": 68.16,
+   "max_ms": 396.111,
+   "mean_ms": 16.447,
+   "threads": 8,
+   "seconds": 15.01,
+   "qps": 486.1,
+   "errors": 0
+  }
+ },
+ "ok": true,
+ "info": {
+  "duckdb_version": "2.0.1",
+  "server": "none (embedded, in-process)",
+  "load": {
+   "threads": 4,
+   "memory_limit": "8GB",
+   "sort_pass_rows_a": 7000000,
+   "sort_pass_rows_b": 10000000
+  },
+  "serve": {
+   "threads": 4,
+   "memory_limit": "2GB",
+   "model": "one DuckDB instance per process, one cursor per worker thread, CURRENT pointer checked with stat() before every query"
+  },
+  "durability": "new files are fsync'ed before the pointer is switched (rename)",
+  "parquet": {
+   "codec": "zstd",
+   "row_group_rows_a": 8192,
+   "row_group_rows_b": 8192,
+   "target_tenant_groups": 64,
+   "b_row_groups_per_file": 32,
+   "projection_b_columns": "ref_path, period, tenant_id, item_key, quantity, price, score",
+   "parquet_metadata_cache": true
+  }
+ },
+ "wall_s": 23.7
+}

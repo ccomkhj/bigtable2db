@@ -30,6 +30,7 @@ can measure them; the defaults are the variants that won:
     B2D_PG_PART_LAYOUT   list:<min_share_pct>:<tail_buckets> | hash:<n>
     B2D_PG_PLAN_CACHE    auto | force_custom_plan | force_generic_plan (reader sessions)
     B2D_PG_LOAD_WORKERS  parallel COPY / index-build connections
+    B2D_PG_COLLATE_C     1 = text key columns COLLATE "C" (faster index builds; not the baseline DDL)
     B2D_PG_VACUUM_PROBE  path of a JSON file; if set, VACUUM is timed in teardown()
 """
 from __future__ import annotations
@@ -136,6 +137,10 @@ class _MaintBase(PostgresBase):
             "load_workers": int(_env("B2D_PG_LOAD_WORKERS", "4")),
             "plan_cache_mode": _env("B2D_PG_PLAN_CACHE", self.default_plan_cache),
         }
+        self.collate_c = _env("B2D_PG_COLLATE_C", "0") == "1"     # text keys COLLATE "C" (not the baseline DDL)
+
+    def _ddl(self, name: str, extra: str = "") -> str:
+        return create_table_sql(name, collate_c=self.collate_c, extra=extra)
 
     default_upsert = "on_conflict"
     default_plan_cache = "auto"
@@ -186,7 +191,7 @@ class _MaintBase(PostgresBase):
                name: str = "delta_stage") -> str:
         """Load the delta into a staging table inside the maintenance transaction."""
         with phases("stage_copy"):
-            ddl = create_table_sql(name)
+            ddl = self._ddl(name)
             if list(columns) != spec.COLUMN_NAMES:
                 ddl = f"CREATE TABLE {name} (tenant_id INTEGER NOT NULL, item_key TEXT NOT NULL, period INTEGER NOT NULL)"
             if self.cfg["stage"] == "temp":
@@ -308,7 +313,7 @@ class PgIncremental(_MaintBase):
         with self.connect() as c:
             with phases("create"):
                 c.execute(f"DROP TABLE IF EXISTS {new}")
-                c.execute(create_table_sql(new, extra=self._heap_opts()))
+                c.execute(self._ddl(new, self._heap_opts()))
             with phases("copy"):
                 self.parallel_copy(new, ds.base_files)
 
@@ -437,7 +442,7 @@ class PgPartitionSwap(_MaintBase):
         parts: list[tuple[str, int]] = []
         if kind == "hash":
             n = int(args[0])
-            c.execute(create_table_sql(parent, extra="PARTITION BY HASH (tenant_id)"))
+            c.execute(self._ddl(parent, "PARTITION BY HASH (tenant_id)"))
             for r in range(n):
                 p = f"{parent}_p{r:02d}"
                 c.execute(f"CREATE TABLE {p} PARTITION OF {parent} FOR VALUES WITH (MODULUS {n}, REMAINDER {r}) {opts}")
@@ -446,7 +451,7 @@ class PgPartitionSwap(_MaintBase):
         else:
             with phases("layout"):
                 layout = list_layout(tenant_counts(ds.base_files), float(args[0]), int(args[1]))
-            c.execute(create_table_sql(parent, extra="PARTITION BY LIST (tenant_id)"))
+            c.execute(self._ddl(parent, "PARTITION BY LIST (tenant_id)"))
             for i, part in enumerate(layout):
                 p = f"{parent}_p{i:02d}"
                 c.execute(f"CREATE TABLE {p} PARTITION OF {parent} "
@@ -486,13 +491,26 @@ class PgPartitionSwap(_MaintBase):
                     for sql in _feed(tasks):
                         ci.execute(sql)
 
+            def analyze():
+                # PG17 has no ANALYZE ONLY: analysing the parent (inherited statistics, which autovacuum
+                # never collects) also analyses every partition, one transaction each, single-threaded.
+                # The data is complete after COPY, so this runs next to the index builds instead of after
+                # them; it only ever waits for the one partition whose index is being built right now.
+                with phases("analyze"), self.connect() as ca:
+                    ca.execute(f"ANALYZE {gen}")
+
             with phases("index"):
-                run_parallel(workers, build)
+                an = ThreadPoolExecutor(1)
+                fut = an.submit(analyze)
+                try:
+                    run_parallel(workers, build)
+                finally:
+                    with phases("analyze_tail"):
+                        an.shutdown(wait=True)
+                fut.result()
             with phases("index_attach"):   # catalog only: the parent indexes adopt the partition indexes
                 c.execute(index_a_sql(gen))
                 c.execute(index_b_sql(gen))
-            with phases("analyze"):        # partitions + the parent's inherited statistics
-                c.execute(f"ANALYZE {gen}")
             with phases("swap"):
                 with c.transaction():
                     c.execute("SET LOCAL lock_timeout = '30s'")
@@ -521,7 +539,7 @@ class PgPartitionSwap(_MaintBase):
             with c.transaction():
                 with phases("copy"):
                     # the CHECK equals the partition constraint, so ATTACH skips its validation scan
-                    c.execute(create_table_sql(new, extra=self._heap_opts()))
+                    c.execute(self._ddl(new, self._heap_opts()))
                     c.execute(f"ALTER TABLE {new} ADD CONSTRAINT {new}_pck CHECK ({cdef})")
                     if not dedicated:   # shared bucket: carry the other tenants over
                         with phases("copy_other_tenants"):

@@ -471,6 +471,62 @@ class PgWalMinimalSwap(_SwapSolution):
     opts = replace(PgParallelSwap.opts, single_txn=True, freeze=True)
 
 
+# --------------------------------------------------------------------------- lab-only loaders
+_DUCKDB_SCRIPT = r"""
+import sys, glob, os, duckdb
+dsn, table, threads, files = sys.argv[1], sys.argv[2], int(sys.argv[3]), sys.argv[4:]
+con = duckdb.connect()
+con.execute(f"SET threads={threads}")
+try:
+    con.execute("LOAD postgres")
+except Exception:
+    import duckdb_extension_postgres_scanner as m          # PyPI repackaging of the signed extension
+    ext = glob.glob(os.path.join(os.path.dirname(m.__file__), "extensions", "*", "*.duckdb_extension"))[0]
+    con.execute(f"INSTALL '{ext}'")
+    con.execute("LOAD postgres_scanner")
+con.execute(f"ATTACH '{dsn}' AS pg (TYPE postgres)")
+lst = ", ".join("'" + f + "'" for f in files)
+con.execute(f"INSERT INTO pg.public.{table} SELECT * FROM read_parquet([{lst}])")
+"""
+
+
+def copy_duckdb(dsn: str, table: str, files: Iterable[Path], threads: int) -> None:
+    """DuckDB's postgres extension: `INSERT INTO pg.tbl SELECT * FROM read_parquet(...)` (binary COPY
+    under the hood). The extension cannot be downloaded in every environment, so the interpreter
+    that has it is configurable: B2D_DUCKDB_PYTHON=/path/to/python."""
+    import os
+    import subprocess
+    import sys
+    py = os.environ.get("B2D_DUCKDB_PYTHON", sys.executable)
+    subprocess.run([py, "-c", _DUCKDB_SCRIPT, dsn, table, str(threads), *map(str, files)], check=True)
+
+
+def naive_insert_variant(dsn: str, table: str, files: list[Path], how: str, batch_rows: int = 5_000) -> None:
+    """INSERT-based loaders as pipelines really issue them (lab suite `naive`)."""
+    if how == "psycopg_multirow":
+        with psycopg.connect(dsn, autocommit=False) as c:
+            naive_insert(c, table, files, batch_rows)
+            c.commit()
+    elif how == "psycopg_executemany":
+        sql = f"INSERT INTO {table} ({COLS}) VALUES (" + ", ".join(["%s"] * len(spec.COLUMN_NAMES)) + ")"
+        with psycopg.connect(dsn, autocommit=False) as c, c.cursor() as cur:
+            for f in files:
+                for batch in pq.ParquetFile(f).iter_batches(batch_size=batch_rows, columns=spec.COLUMN_NAMES):
+                    cur.executemany(sql, list(zip(*[col.to_pylist() for col in batch.columns])))
+            c.commit()
+    elif how in ("pandas_to_sql_multi", "pandas_to_sql_default"):
+        import sqlalchemy as sa
+        eng = sa.create_engine(_uri(dsn).replace("postgresql://", "postgresql+psycopg://"))
+        kw = {"method": "multi", "chunksize": batch_rows} if how.endswith("multi") else {"chunksize": batch_rows}
+        with eng.begin() as conn:
+            for f in files:
+                for batch in pq.ParquetFile(f).iter_batches(batch_size=100_000, columns=spec.COLUMN_NAMES):
+                    batch.to_pandas().to_sql(table, conn, if_exists="append", index=False, **kw)
+        eng.dispose()
+    else:
+        raise ValueError(how)
+
+
 # --------------------------------------------------------------------------- lever lab
 # Not part of the benchmark protocol. Measures one lever at a time against a kept-alive server so
 # that docs/notes/postgres.md can say what each lever is worth:
@@ -516,6 +572,18 @@ def _suites() -> dict[str, tuple[str, list[Variant]]]:
             V("x4 psycopg binary write_row", replace(_P, encoder="pgbinary")),
             V("x4 psycopg binary write_row, processes", replace(_P, encoder="pgbinary", workers="processes")),
             V("x4 ADBC adbc_ingest (binary)", replace(_P, encoder="adbc")),
+        ]),
+        "duckdb": ("copy", [
+            V("x4 pyarrow CSV (baseline)", _P),
+            V("DuckDB postgres extension, 4 threads", replace(_P, encoder="duckdb")),
+            V("DuckDB postgres extension, 1 thread", replace(_P, encoder="duckdb", streams=1)),
+        ]),
+        "naive": ("naive", [
+            V("COPY x1 into indexed table (pg_truncate_copy)", LoadOptions(encoder="csv_ref")),
+            V("psycopg multi-row INSERT, 5k rows/stmt (pg_naive_insert)", LoadOptions(encoder="psycopg_multirow")),
+            V("psycopg executemany (pipeline mode), 5k rows/batch", LoadOptions(encoder="psycopg_executemany")),
+            V("pandas to_sql(method='multi', chunksize=5000)", LoadOptions(encoder="pandas_to_sql_multi")),
+            V("pandas to_sql(chunksize=5000) (SQLAlchemy insertmanyvalues)", LoadOptions(encoder="pandas_to_sql_default")),
         ]),
         "session": ("copy", [
             V("x4 synchronous_commit=on", _P),
@@ -580,7 +648,58 @@ def _suites() -> dict[str, tuple[str, list[Variant]]]:
     }
 
 
-def _lab_one(sol: PostgresBase, admin_dsn: str, files: list[Path], mode: str, v: Variant, state: dict) -> dict:
+class _Cpu:
+    """CPU seconds used by this process (+children), by the server container, and by everybody
+    else on the machine during one measurement. On a shared box wall time is noisy; CPU time is not."""
+
+    def __init__(self, container: str):
+        from ..dockerutil import sh
+        cid = sh("docker", "inspect", "-f", "{{.Id}}", container)
+        cands = [Path(f"/sys/fs/cgroup/cpuacct/docker/{cid}/cpuacct.usage"),
+                 Path(f"/sys/fs/cgroup/system.slice/docker-{cid}.scope/cpu.stat"),
+                 Path(f"/sys/fs/cgroup/docker/{cid}/cpu.stat")]
+        self.path = next((c for c in cands if c.exists()), None)
+
+    def _server(self) -> float:
+        if self.path is None:
+            return float("nan")
+        txt = self.path.read_text()
+        if self.path.name == "cpuacct.usage":
+            return int(txt) / 1e9
+        return int(txt.split("usage_usec")[1].split()[0]) / 1e6
+
+    @staticmethod
+    def _client() -> float:
+        import resource
+        a, b = resource.getrusage(resource.RUSAGE_SELF), resource.getrusage(resource.RUSAGE_CHILDREN)
+        return a.ru_utime + a.ru_stime + b.ru_utime + b.ru_stime
+
+    @staticmethod
+    def _machine() -> float:
+        import psutil
+        t = psutil.cpu_times()
+        return sum(t) - t.idle - t.iowait
+
+    def snap(self):
+        return time.perf_counter(), self._client(), self._server(), self._machine()
+
+    def since(self, s0) -> dict:
+        t, c, s, m = (b - a for a, b in zip(s0, self.snap()))
+        return {"client_cpu_s": round(c, 2), "server_cpu_s": round(s, 2),
+                "foreign_cores": round(max(0.0, m - c - s) / t, 2)}
+
+    def wait_quiet(self, max_foreign: float = 1.0, timeout: float = 6.0) -> None:
+        """Wait (bounded) for the other tenants of the machine to leave some CPU."""
+        t_end = time.time() + timeout
+        while time.time() < t_end:
+            s0 = self.snap()
+            time.sleep(0.5)
+            if self.since(s0)["foreign_cores"] <= max_foreign:
+                return
+
+
+def _lab_one(sol: PostgresBase, admin_dsn: str, files: list[Path], mode: str, v: Variant, state: dict,
+             cpu: _Cpu) -> dict:
     table = "lab_t"
     with psycopg.connect(admin_dsn, autocommit=True) as a:
         for k, val in v.conf:
@@ -602,14 +721,29 @@ def _lab_one(sol: PostgresBase, admin_dsn: str, files: list[Path], mode: str, v:
         a.execute("CHECKPOINT")
         lsn0 = a.execute("SELECT pg_current_wal_insert_lsn()").fetchone()[0]
 
+    cpu.wait_quiet()
     ph = Phases()
+    c0 = cpu.snap()
     t0 = time.perf_counter()
     if mode == "index":
         build_indexes(admin_dsn, table, v.opts, ph)
+    elif mode == "naive":
+        with psycopg.connect(admin_dsn, autocommit=True) as c:
+            c.execute(create_table_sql(table, collate_c=v.collate_c))
+            c.execute(index_a_sql(table))
+            c.execute(index_b_sql(table))
+            if v.opts.encoder == "csv_ref":
+                copy_parquet(c, table, files)
+        if v.opts.encoder != "csv_ref":
+            naive_insert_variant(admin_dsn, table, files, v.opts.encoder)
     elif mode == "copy":
         o = v.opts
         ddl = create_table_sql(table, unlogged=o.unlogged, collate_c=v.collate_c)
-        if o.single_txn:
+        if o.encoder == "duckdb":
+            with psycopg.connect(admin_dsn, autocommit=True) as c:
+                c.execute(ddl)
+            copy_duckdb(admin_dsn, table, files, o.streams)
+        elif o.single_txn:
             with psycopg.connect(admin_dsn, autocommit=False) as c:
                 _apply(c, copy_session(o))
                 c.execute(ddl)
@@ -625,6 +759,7 @@ def _lab_one(sol: PostgresBase, admin_dsn: str, files: list[Path], mode: str, v:
     else:
         load_new_table(admin_dsn, files, v.opts, ph, collate_c=v.collate_c, table=table)
     total = time.perf_counter() - t0
+    used = cpu.since(c0)
 
     with psycopg.connect(admin_dsn, autocommit=True) as a:
         wal = a.execute("SELECT pg_wal_lsn_diff(pg_current_wal_insert_lsn(), %s)", [lsn0]).fetchone()[0]
@@ -633,7 +768,7 @@ def _lab_one(sol: PostgresBase, admin_dsn: str, files: list[Path], mode: str, v:
         for k, _ in v.conf:
             a.execute(f"ALTER SYSTEM RESET {k}")
         a.execute("SELECT pg_reload_conf()")
-    return {"total_s": round(total, 3), "phases": ph.times, "wal_mb": round(float(wal) / 2**20, 1),
+    return {"total_s": round(total, 3), "phases": ph.times, **used, "wal_mb": round(float(wal) / 2**20, 1),
             "heap_mb": round(sizes[0] / 2**20, 1), "index_mb": round(sizes[1] / 2**20, 1), "rows": sizes[2]}
 
 
@@ -645,6 +780,7 @@ def lab(scale: str, suites: list[str], repeat: int, out: Path | None, minimal: b
     sol.setup()
     admin = f"host=127.0.0.1 port={sol.port} user=postgres password=bench dbname=postgres"
     results: dict = {"scale": scale, "rows": ds.rows, "conf": sol.conf(), "suites": {}}
+    cpu = _Cpu(sol.container)
     try:
         all_suites = _suites()
         for name in suites:
@@ -653,28 +789,34 @@ def lab(scale: str, suites: list[str], repeat: int, out: Path | None, minimal: b
             state: dict = {}
             for _ in range(repeat):
                 for v in variants:
-                    r = _lab_one(sol, admin, ds.base_files, mode, v, state)
+                    r = _lab_one(sol, admin, ds.base_files, mode, v, state, cpu)
                     assert r["rows"] == ds.rows, (v.label, r)
                     runs[v.label].append(r)
-            print(f"\n== {name} ({mode}, {scale}, {repeat} runs each; seconds min / median) ==", flush=True)
+            print(f"\n== {name} ({mode}, {scale}, {repeat} runs each) ==\n{'variant':62s} wall_min / median   "
+                  f"cpu client+server (median)  foreign load at min", flush=True)
             rows = []
             for v in variants:
                 rs = runs[v.label]
                 tot = [r["total_s"] for r in rs]
                 phs = {k: min(r["phases"].get(k, 0) for r in rs) for k in rs[0]["phases"]}
+                best = min(rs, key=lambda r: r["total_s"])
                 row = {"variant": v.label, "min_s": min(tot), "median_s": round(statistics.median(tot), 3),
+                       "client_cpu_s": round(statistics.median(r["client_cpu_s"] for r in rs), 2),
+                       "server_cpu_s": round(statistics.median(r["server_cpu_s"] for r in rs), 2),
+                       "foreign_cores_at_min": best["foreign_cores"],
                        "phases_min": phs, "wal_mb": rs[0]["wal_mb"], "heap_mb": rs[0]["heap_mb"],
                        "index_mb": rs[0]["index_mb"], "runs": rs, "opts": asdict(v.opts),
                        "collate_c": v.collate_c, "conf": dict(v.conf)}
                 rows.append(row)
-                print(f"{v.label:62s} {row['min_s']:7.2f} / {row['median_s']:7.2f}  "
-                      f"rows/s={ds.rows / row['min_s']:9.0f}  wal={row['wal_mb']:7.0f}MB  "
-                      f"idx={row['index_mb']:5.0f}MB  {json.dumps(phs)}", flush=True)
+                print(f"{v.label:62s} {row['min_s']:7.2f} / {row['median_s']:7.2f}   "
+                      f"{row['client_cpu_s']:5.2f}+{row['server_cpu_s']:5.2f}={row['client_cpu_s'] + row['server_cpu_s']:6.2f}s  "
+                      f"foreign={row['foreign_cores_at_min']:4.2f}  wal={row['wal_mb']:5.0f}MB  "
+                      f"idx={row['index_mb']:4.0f}MB  {json.dumps(phs)}", flush=True)
             results["suites"][name] = {"mode": mode, "variants": rows}
+            if out:
+                out.parent.mkdir(parents=True, exist_ok=True)
+                out.write_text(json.dumps(results, indent=1))
     finally:
-        if out:
-            out.parent.mkdir(parents=True, exist_ok=True)
-            out.write_text(json.dumps(results, indent=1))
         sol.teardown()
 
 
@@ -686,5 +828,7 @@ if __name__ == "__main__":
     ap.add_argument("--out", type=Path)
     ap.add_argument("--minimal", action="store_true", help="run against a wal_level=minimal server")
     a = ap.parse_args()
-    names = [s for s in _suites() if s != "minimal"] if a.suite == "all" else a.suite.split(",")
+    import signal
+    signal.signal(signal.SIGTERM, lambda *_: (_ for _ in ()).throw(KeyboardInterrupt()))   # always tear down
+    names = [s for s in _suites() if s not in ("minimal", "duckdb")] if a.suite == "all" else a.suite.split(",")
     lab(a.scale, names, a.repeat, a.out, a.minimal)

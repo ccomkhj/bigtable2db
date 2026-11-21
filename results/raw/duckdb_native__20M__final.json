@@ -1,0 +1,384 @@
+{
+ "solution": "duckdb_native",
+ "engine": "duckdb",
+ "strategy": "build a new DuckDB database file (table sorted by business key + projection sorted by ref_path, zone maps only, no ART), switch pointer atomically; read-only attach in-process",
+ "atomic_swap": true,
+ "scale": "20M",
+ "rows": 20000000,
+ "reps": 3,
+ "tag": "final",
+ "started_utc": "2026-11-21T21:22:57+00:00",
+ "host": {
+  "cpus": 4,
+  "cpu_model": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "mem_gb": 15.7,
+  "kernel": "6.18.44-fc-v726",
+  "python": "3.13.18"
+ },
+ "steps": {
+  "initial_load": {
+   "total_s": 52.26,
+   "phases": {
+    "plan": 0.05,
+    "a_sort_insert": 41.97,
+    "b_plan": 1.357,
+    "b_sort_insert": 8.432,
+    "checkpoint": 0.043,
+    "publish": 0.005
+   },
+   "notes": {
+    "a_sort_passes": 4,
+    "b_sort_passes": 2
+   },
+   "cpu_avg_pct": 88.9,
+   "cpu_max_pct": 100.0,
+   "mem_peak_gb": 7.98,
+   "disk_peak_delta_gb": 2.75,
+   "verify": {
+    "ok": true,
+    "got": [
+     20000000,
+     10001073155.38578,
+     5010344061.790163,
+     19999999
+    ],
+    "want": [
+     20000000,
+     10001073155.3863,
+     5010344061.790356,
+     19999999
+    ]
+   }
+  },
+  "storage": {
+   "total": 2947821568,
+   "used_bytes": 2947809280,
+   "free_bytes": 0,
+   "index_a": 0,
+   "note": "one database file holding big_table (sorted) and big_table_b (projection); data_dir_bytes also contains the previous snapshot, kept until the next publish",
+   "data_dir_bytes": 2947821585
+  },
+  "queries": {
+   "point": {
+    "verified": true,
+    "n": 500,
+    "p50_ms": 2.514,
+    "p95_ms": 4.083,
+    "p99_ms": 9.566,
+    "max_ms": 16.492,
+    "mean_ms": 2.768
+   },
+   "series": {
+    "verified": true,
+    "n": 500,
+    "p50_ms": 2.12,
+    "p95_ms": 3.736,
+    "p99_ms": 5.39,
+    "max_ms": 8.578,
+    "mean_ms": 2.401
+   },
+   "tenant_agg": {
+    "verified": true,
+    "n": 40,
+    "p50_ms": 2.524,
+    "p95_ms": 10.955,
+    "p99_ms": 21.086,
+    "max_ms": 21.086,
+    "mean_ms": 3.977
+   },
+   "full_agg": {
+    "verified": true,
+    "n": 5,
+    "p50_ms": 41.892,
+    "p95_ms": 42.316,
+    "p99_ms": 42.316,
+    "max_ms": 42.316,
+    "mean_ms": 41.822
+   }
+  },
+  "concurrency": {
+   "n": 20939,
+   "p50_ms": 4.942,
+   "p95_ms": 12.354,
+   "p99_ms": 17.415,
+   "max_ms": 48.474,
+   "mean_ms": 5.729,
+   "threads": 8,
+   "seconds": 15.01,
+   "qps": 1395.5,
+   "errors": 0
+  },
+  "refresh": [
+   {
+    "total_s": 49.806,
+    "phases": {
+     "plan": 0.043,
+     "a_sort_insert": 38.739,
+     "b_plan": 1.375,
+     "b_sort_insert": 9.29,
+     "checkpoint": 0.024,
+     "publish": 0.002
+    },
+    "notes": {
+     "a_sort_passes": 4,
+     "b_sort_passes": 2
+    },
+    "cpu_avg_pct": 90.2,
+    "cpu_max_pct": 100.0,
+    "mem_peak_gb": 9.88,
+    "disk_peak_delta_gb": 2.75,
+    "reader": {
+     "n": 2021,
+     "p50_ms": 4.024,
+     "p95_ms": 11.895,
+     "p99_ms": 20.891,
+     "max_ms": 105.201,
+     "mean_ms": 5.295,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.125,
+     "first_error": null
+    },
+    "verify": {
+     "ok": true,
+     "got": [
+      20000000,
+      10001073155.386166,
+      5010344061.789914,
+      19999999
+     ],
+     "want": [
+      20000000,
+      10001073155.3863,
+      5010344061.790356,
+      19999999
+     ]
+    }
+   },
+   {
+    "total_s": 51.376,
+    "phases": {
+     "plan": 0.038,
+     "a_sort_insert": 39.956,
+     "b_plan": 1.524,
+     "b_sort_insert": 9.434,
+     "checkpoint": 0.028,
+     "publish": 0.004
+    },
+    "notes": {
+     "a_sort_passes": 4,
+     "b_sort_passes": 2
+    },
+    "cpu_avg_pct": 89.1,
+    "cpu_max_pct": 100.0,
+    "mem_peak_gb": 10.23,
+    "disk_peak_delta_gb": 2.75,
+    "reader": {
+     "n": 1965,
+     "p50_ms": 4.303,
+     "p95_ms": 11.255,
+     "p99_ms": 27.716,
+     "max_ms": 1468.07,
+     "mean_ms": 7.004,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 1.488,
+     "first_error": null
+    },
+    "verify": {
+     "ok": true,
+     "got": [
+      20000000,
+      10001073155.385796,
+      5010344061.790136,
+      19999999
+     ],
+     "want": [
+      20000000,
+      10001073155.3863,
+      5010344061.790356,
+      19999999
+     ]
+    }
+   }
+  ],
+  "incremental": {
+   "upsert_1pct": {
+    "total_s": 8.119,
+    "phases": {
+     "copy_file": 1.597,
+     "stage": 0.24,
+     "merge_a": 1.55,
+     "merge_b": 0.923,
+     "commit_checkpoint": 3.717,
+     "publish": 0.002
+    },
+    "notes": {},
+    "cpu_avg_pct": 34.6,
+    "cpu_max_pct": 68.7,
+    "mem_peak_gb": 3.59,
+    "disk_peak_delta_gb": 2.88,
+    "reader": {
+     "n": 331,
+     "p50_ms": 3.524,
+     "p95_ms": 8.095,
+     "p99_ms": 17.84,
+     "max_ms": 41.763,
+     "mean_ms": 4.29,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.062,
+     "first_error": null
+    },
+    "rows": 200000,
+    "verify": {
+     "ok": true,
+     "got": [
+      20050000,
+      10025876442.723654,
+      5022872947.550305,
+      20049999
+     ],
+     "want": [
+      20050000,
+      10025876442.723816,
+      5022872947.549857,
+      20049999
+     ]
+    }
+   },
+   "upsert_10pct": {
+    "total_s": 12.631,
+    "phases": {
+     "copy_file": 1.289,
+     "stage": 1.956,
+     "merge_a": 4.655,
+     "merge_b": 2.491,
+     "commit_checkpoint": 2.015,
+     "publish": 0.002
+    },
+    "notes": {},
+    "cpu_avg_pct": 69.9,
+    "cpu_max_pct": 100.0,
+    "mem_peak_gb": 4.81,
+    "disk_peak_delta_gb": 3.33,
+    "reader": {
+     "n": 418,
+     "p50_ms": 6.622,
+     "p95_ms": 15.627,
+     "p99_ms": 25.37,
+     "max_ms": 870.772,
+     "mean_ms": 9.833,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.891,
+     "first_error": null
+    },
+    "rows": 2000000,
+    "verify": {
+     "ok": true,
+     "got": [
+      20550000,
+      10276219054.717052,
+      5148355856.310056,
+      20549999
+     ],
+     "want": [
+      20550000,
+      10276219054.717178,
+      5148355856.310099,
+      20549999
+     ]
+    }
+   },
+   "replace_tenant": {
+    "total_s": 8.604,
+    "phases": {
+     "copy_file": 2.71,
+     "replace_a": 1.692,
+     "replace_b": 0.522,
+     "commit_checkpoint": 3.556,
+     "publish": 0.002
+    },
+    "notes": {},
+    "cpu_avg_pct": 34.8,
+    "cpu_max_pct": 93.6,
+    "mem_peak_gb": 2.95,
+    "disk_peak_delta_gb": 3.53,
+    "rows": 1024980,
+    "verify": {
+     "ok": true,
+     "got": [
+      20546740,
+      10274114565.529171,
+      5147287610.329928,
+      20649999
+     ],
+     "want": [
+      20546740,
+      10274114565.529152,
+      5147287610.330014,
+      20649999
+     ]
+    }
+   }
+  },
+  "storage_after": {
+   "total": 3772788736,
+   "used_bytes": 3562274816,
+   "free_bytes": 210501632,
+   "index_a": 0,
+   "note": "one database file holding big_table (sorted) and big_table_b (projection); data_dir_bytes also contains the previous snapshot, kept until the next publish",
+   "data_dir_bytes": 7329308689
+  },
+  "queries_after": {
+   "point": {
+    "n": 300,
+    "p50_ms": 3.504,
+    "p95_ms": 6.882,
+    "p99_ms": 12.273,
+    "max_ms": 28.873,
+    "mean_ms": 4.085
+   },
+   "series": {
+    "n": 300,
+    "p50_ms": 9.745,
+    "p95_ms": 15.388,
+    "p99_ms": 23.196,
+    "max_ms": 29.66,
+    "mean_ms": 10.357
+   },
+   "tenant_agg": {
+    "n": 20,
+    "p50_ms": 3.518,
+    "p95_ms": 5.846,
+    "p99_ms": 6.283,
+    "max_ms": 6.283,
+    "mean_ms": 3.891
+   }
+  }
+ },
+ "ok": true,
+ "info": {
+  "duckdb_version": "2.0.1",
+  "server": "none (embedded, in-process)",
+  "load": {
+   "threads": 4,
+   "memory_limit": "8GB",
+   "sort_pass_rows_a": 6000000,
+   "sort_pass_rows_b": 10000000
+  },
+  "serve": {
+   "threads": 4,
+   "memory_limit": "2GB",
+   "model": "one DuckDB instance per process, one cursor per worker thread, CURRENT pointer checked with stat() before every query"
+  },
+  "durability": "new files are fsync'ed before the pointer is switched (rename)",
+  "native": {
+   "indexes": "none (zone maps on sorted data); ART measured and rejected, see notes",
+   "projection_b_columns": "ref_path, period, tenant_id, item_key, quantity, price, score",
+   "maintenance": "copy file, SQL in the copy, switch pointer"
+  }
+ },
+ "wall_s": 216.1
+}

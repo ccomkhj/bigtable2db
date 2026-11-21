@@ -1,0 +1,434 @@
+{
+ "solution": "duckdb_parquet",
+ "engine": "duckdb",
+ "strategy": "publish immutable sorted zstd Parquet snapshot (table by business key + narrow projection by ref_path, small row groups, manifest with file key bounds), atomic pointer switch; DuckDB in-process",
+ "atomic_swap": true,
+ "scale": "20M",
+ "rows": 20000000,
+ "reps": 3,
+ "tag": "final",
+ "started_utc": "2026-11-21T21:26:37+00:00",
+ "host": {
+  "cpus": 4,
+  "cpu_model": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "mem_gb": 15.7,
+  "kernel": "6.18.44-fc-v726",
+  "python": "3.13.18"
+ },
+ "steps": {
+  "initial_load": {
+   "total_s": 52.595,
+   "phases": {
+    "plan": 0.052,
+    "a_sort_write": 38.009,
+    "b_plan": 0.571,
+    "b_sort": 7.962,
+    "b_write": 5.56,
+    "fsync": 0.209,
+    "publish": 0.002,
+    "gc": 0.011
+   },
+   "notes": {
+    "a_sort_passes": 4,
+    "a_files": 340,
+    "b_sort_passes": 2,
+    "b_files": 153
+   },
+   "cpu_avg_pct": 96.4,
+   "cpu_max_pct": 100.0,
+   "mem_peak_gb": 6.85,
+   "disk_peak_delta_gb": 1.98,
+   "verify": {
+    "ok": true,
+    "got": [
+     20000000,
+     10001073155.385979,
+     5010344061.789986,
+     19999999
+    ],
+    "want": [
+     20000000,
+     10001073155.3863,
+     5010344061.790356,
+     19999999
+    ]
+   }
+  },
+  "storage": {
+   "table": 1727614065,
+   "index_a": 0,
+   "index_b": 400927253,
+   "total": 2128541318,
+   "files_a": 340,
+   "files_b": 153,
+   "tenant_groups": 69,
+   "note": "index_a = sort order of the table files (no extra bytes); index_b = sorted projection; data_dir_bytes also contains the previous snapshot, kept until the next publish",
+   "data_dir_bytes": 2128648877
+  },
+  "queries": {
+   "point": {
+    "verified": true,
+    "n": 500,
+    "p50_ms": 3.545,
+    "p95_ms": 5.571,
+    "p99_ms": 8.459,
+    "max_ms": 19.858,
+    "mean_ms": 3.836
+   },
+   "series": {
+    "verified": true,
+    "n": 500,
+    "p50_ms": 2.667,
+    "p95_ms": 3.285,
+    "p99_ms": 5.337,
+    "max_ms": 12.309,
+    "mean_ms": 2.773
+   },
+   "tenant_agg": {
+    "verified": true,
+    "n": 40,
+    "p50_ms": 4.826,
+    "p95_ms": 8.466,
+    "p99_ms": 33.352,
+    "max_ms": 33.352,
+    "mean_ms": 5.652
+   },
+   "full_agg": {
+    "verified": true,
+    "n": 5,
+    "p50_ms": 499.242,
+    "p95_ms": 571.138,
+    "p99_ms": 571.138,
+    "max_ms": 571.138,
+    "mean_ms": 520.638
+   }
+  },
+  "concurrency": {
+   "n": 14044,
+   "p50_ms": 7.966,
+   "p95_ms": 15.895,
+   "p99_ms": 20.69,
+   "max_ms": 53.804,
+   "mean_ms": 8.543,
+   "threads": 8,
+   "seconds": 15.01,
+   "qps": 935.9,
+   "errors": 0
+  },
+  "refresh": [
+   {
+    "total_s": 53.251,
+    "phases": {
+     "plan": 0.049,
+     "a_sort_write": 38.411,
+     "b_plan": 0.61,
+     "b_sort": 8.11,
+     "b_write": 5.586,
+     "fsync": 0.211,
+     "publish": 0.004,
+     "gc": 0.033
+    },
+    "notes": {
+     "a_sort_passes": 4,
+     "a_files": 340,
+     "b_sort_passes": 2,
+     "b_files": 154
+    },
+    "cpu_avg_pct": 96.4,
+    "cpu_max_pct": 100.0,
+    "mem_peak_gb": 6.66,
+    "disk_peak_delta_gb": 1.98,
+    "reader": {
+     "n": 1693,
+     "p50_ms": 10.078,
+     "p95_ms": 25.076,
+     "p99_ms": 41.316,
+     "max_ms": 93.802,
+     "mean_ms": 11.876,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.133,
+     "first_error": null
+    },
+    "verify": {
+     "ok": true,
+     "got": [
+      20000000,
+      10001073155.385899,
+      5010344061.790165,
+      19999999
+     ],
+     "want": [
+      20000000,
+      10001073155.3863,
+      5010344061.790356,
+      19999999
+     ]
+    }
+   },
+   {
+    "total_s": 54.391,
+    "phases": {
+     "plan": 0.038,
+     "a_sort_write": 37.705,
+     "b_plan": 0.565,
+     "b_sort": 8.647,
+     "b_write": 5.647,
+     "fsync": 0.178,
+     "publish": 0.004,
+     "gc": 1.445
+    },
+    "notes": {
+     "a_sort_passes": 4,
+     "a_files": 340,
+     "b_sort_passes": 2,
+     "b_files": 154
+    },
+    "cpu_avg_pct": 94.7,
+    "cpu_max_pct": 100.0,
+    "mem_peak_gb": 6.85,
+    "disk_peak_delta_gb": 1.98,
+    "reader": {
+     "n": 1781,
+     "p50_ms": 9.434,
+     "p95_ms": 23.302,
+     "p99_ms": 36.362,
+     "max_ms": 60.124,
+     "mean_ms": 11.022,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.08,
+     "first_error": null
+    },
+    "verify": {
+     "ok": true,
+     "got": [
+      20000000,
+      10001073155.386007,
+      5010344061.789982,
+      19999999
+     ],
+     "want": [
+      20000000,
+      10001073155.3863,
+      5010344061.790356,
+      19999999
+     ]
+    }
+   }
+  ],
+  "incremental": {
+   "upsert_1pct": {
+    "total_s": 44.431,
+    "phases": {
+     "stage": 0.251,
+     "a_rewrite": 26.952,
+     "b_plan": 0.622,
+     "b_sort": 9.653,
+     "b_write": 5.121,
+     "fsync": 0.176,
+     "publish": 0.004,
+     "gc": 1.499
+    },
+    "notes": {
+     "groups_rewritten": 69,
+     "groups_total": 69,
+     "a_files_rewritten": 340,
+     "a_files_total": 340,
+     "b_sort_passes": 3,
+     "b_files": 155
+    },
+    "cpu_avg_pct": 93.4,
+    "cpu_max_pct": 100.0,
+    "mem_peak_gb": 6.82,
+    "disk_peak_delta_gb": 1.99,
+    "reader": {
+     "n": 1340,
+     "p50_ms": 10.601,
+     "p95_ms": 24.596,
+     "p99_ms": 39.737,
+     "max_ms": 96.102,
+     "mean_ms": 12.395,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.116,
+     "first_error": null
+    },
+    "rows": 200000,
+    "verify": {
+     "ok": true,
+     "got": [
+      20050000,
+      10025876442.723946,
+      5022872947.549995,
+      20049999
+     ],
+     "want": [
+      20050000,
+      10025876442.723816,
+      5022872947.549857,
+      20049999
+     ]
+    }
+   },
+   "upsert_10pct": {
+    "total_s": 48.977,
+    "phases": {
+     "stage": 1.28,
+     "a_rewrite": 28.943,
+     "b_plan": 0.574,
+     "b_sort": 10.592,
+     "b_write": 5.711,
+     "fsync": 0.141,
+     "publish": 0.004,
+     "gc": 1.502
+    },
+    "notes": {
+     "groups_rewritten": 69,
+     "groups_total": 69,
+     "a_files_rewritten": 343,
+     "a_files_total": 343,
+     "b_sort_passes": 3,
+     "b_files": 159
+    },
+    "cpu_avg_pct": 94.0,
+    "cpu_max_pct": 100.0,
+    "mem_peak_gb": 7.69,
+    "disk_peak_delta_gb": 2.04,
+    "reader": {
+     "n": 1486,
+     "p50_ms": 10.703,
+     "p95_ms": 26.217,
+     "p99_ms": 36.578,
+     "max_ms": 88.576,
+     "mean_ms": 12.233,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.109,
+     "first_error": null
+    },
+    "rows": 2000000,
+    "verify": {
+     "ok": true,
+     "got": [
+      20550000,
+      10276219054.716732,
+      5148355856.310192,
+      20549999
+     ],
+     "want": [
+      20550000,
+      10276219054.717178,
+      5148355856.310099,
+      20549999
+     ]
+    }
+   },
+   "replace_tenant": {
+    "total_s": 17.627,
+    "phases": {
+     "a_rewrite": 1.403,
+     "b_plan": 0.632,
+     "b_sort": 8.797,
+     "b_write": 4.971,
+     "fsync": 0.117,
+     "publish": 0.003,
+     "gc": 1.535
+    },
+    "notes": {
+     "groups_rewritten": 1,
+     "groups_total": 69,
+     "a_files_rewritten": 16,
+     "a_files_total": 343,
+     "b_sort_passes": 3,
+     "b_files": 159
+    },
+    "cpu_avg_pct": 85.7,
+    "cpu_max_pct": 100.0,
+    "mem_peak_gb": 5.07,
+    "disk_peak_delta_gb": 0.44,
+    "rows": 1024980,
+    "verify": {
+     "ok": true,
+     "got": [
+      20546740,
+      10274114565.528942,
+      5147287610.329785,
+      20649999
+     ],
+     "want": [
+      20546740,
+      10274114565.529152,
+      5147287610.330014,
+      20649999
+     ]
+    }
+   }
+  },
+  "storage_after": {
+   "table": 1775115810,
+   "index_a": 0,
+   "index_b": 411952316,
+   "total": 2187068126,
+   "files_a": 343,
+   "files_b": 159,
+   "tenant_groups": 69,
+   "note": "index_a = sort order of the table files (no extra bytes); index_b = sorted projection; data_dir_bytes also contains the previous snapshot, kept until the next publish",
+   "data_dir_bytes": 2687860255
+  },
+  "queries_after": {
+   "point": {
+    "n": 300,
+    "p50_ms": 3.568,
+    "p95_ms": 5.261,
+    "p99_ms": 7.362,
+    "max_ms": 71.225,
+    "mean_ms": 3.979
+   },
+   "series": {
+    "n": 300,
+    "p50_ms": 3.504,
+    "p95_ms": 5.19,
+    "p99_ms": 6.809,
+    "max_ms": 8.971,
+    "mean_ms": 3.603
+   },
+   "tenant_agg": {
+    "n": 20,
+    "p50_ms": 6.98,
+    "p95_ms": 12.217,
+    "p99_ms": 51.663,
+    "max_ms": 51.663,
+    "mean_ms": 9.733
+   }
+  }
+ },
+ "ok": true,
+ "info": {
+  "duckdb_version": "2.0.1",
+  "server": "none (embedded, in-process)",
+  "load": {
+   "threads": 4,
+   "memory_limit": "8GB",
+   "sort_pass_rows_a": 6000000,
+   "sort_pass_rows_b": 10000000
+  },
+  "serve": {
+   "threads": 4,
+   "memory_limit": "2GB",
+   "model": "one DuckDB instance per process, one cursor per worker thread, CURRENT pointer checked with stat() before every query"
+  },
+  "durability": "new files are fsync'ed before the pointer is switched (rename)",
+  "parquet": {
+   "codec": "zstd",
+   "row_group_rows_a": 2048,
+   "row_groups_per_file_a": 32,
+   "row_group_rows_b": 8192,
+   "row_groups_per_file_b": 16,
+   "target_tenant_groups": 64,
+   "projection_b_columns": "ref_path, period, tenant_id, item_key, quantity, price, score",
+   "parquet_metadata_cache": true
+  }
+ },
+ "wall_s": 304.2
+}

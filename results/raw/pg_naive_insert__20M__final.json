@@ -1,0 +1,94 @@
+{
+ "solution": "pg_naive_insert",
+ "engine": "postgres",
+ "strategy": "TRUNCATE + batched multi-row INSERT (5,000 rows/statement) into the indexed live table",
+ "atomic_swap": false,
+ "scale": "20M",
+ "rows": 20000000,
+ "reps": 1,
+ "tag": "final",
+ "started_utc": "2026-11-21T22:04:13+00:00",
+ "host": {
+  "cpus": 4,
+  "cpu_model": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "mem_gb": 15.7,
+  "kernel": "6.18.44-fc-v726",
+  "python": "3.13.18"
+ },
+ "steps": {
+  "initial_load": {
+   "total_s": 824.505,
+   "phases": {
+    "truncate": 0.002,
+    "insert_with_indexes": 822.767,
+    "commit": 0.175,
+    "analyze": 1.545
+   },
+   "notes": {},
+   "cpu_avg_pct": 25.3,
+   "cpu_max_pct": 32.9,
+   "mem_peak_gb": 5.24,
+   "disk_peak_delta_gb": 25.62,
+   "verify": {
+    "ok": true,
+    "got": [
+     20000000,
+     10001073155.385843,
+     5010344061.790149,
+     19999999
+    ],
+    "want": [
+     20000000,
+     10001073155.3863,
+     5010344061.790356,
+     19999999
+    ]
+   }
+  },
+  "storage": {
+   "table": 10264993792,
+   "index_a": 4325801984,
+   "index_b": 4348133376,
+   "total": 18938929152,
+   "database": 18946758323,
+   "indexes": {
+    "big_table_a": 4325801984,
+    "big_table_b": 4348133376
+   },
+   "data_dir_bytes": 27552800471
+  },
+  "refresh": []
+ },
+ "ok": true,
+ "info": {
+  "image": "postgres:17",
+  "server_version": "17.12 (Debian 17.12-1.pgdg13+1)",
+  "db_collation": "en_US.utf8",
+  "text_key_collation": "en_US.utf8",
+  "conf": {
+   "shared_buffers": "4GB",
+   "effective_cache_size": "10GB",
+   "work_mem": "64MB",
+   "maintenance_work_mem": "1GB",
+   "max_wal_size": "8GB",
+   "min_wal_size": "1GB",
+   "checkpoint_timeout": "15min",
+   "checkpoint_completion_target": "0.9",
+   "wal_compression": "lz4",
+   "max_worker_processes": "8",
+   "max_parallel_workers": "4",
+   "max_parallel_workers_per_gather": "2",
+   "max_parallel_maintenance_workers": "2",
+   "random_page_cost": "1.1",
+   "effective_io_concurrency": "200",
+   "max_connections": "100",
+   "listen_addresses": "127.0.0.1"
+  },
+  "insert": {
+   "rows_per_statement": 5000,
+   "driver": "psycopg 3.3.9",
+   "statement": "INSERT ... VALUES (%s, ...), ... with bound parameters, one transaction"
+  }
+ },
+ "wall_s": 846.7
+}

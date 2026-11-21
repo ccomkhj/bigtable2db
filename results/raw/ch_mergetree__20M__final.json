@@ -1,0 +1,463 @@
+{
+ "solution": "ch_mergetree",
+ "engine": "clickhouse",
+ "strategy": "MergeTree ORDER BY business key + projection index on (ref_path, period); INSERT SELECT FROM file(Parquet) -> OPTIMIZE FINAL -> EXCHANGE TABLES; maintenance = rebuild from table + delta and swap (no FINAL at read time)",
+ "atomic_swap": true,
+ "scale": "20M",
+ "rows": 20000000,
+ "reps": 3,
+ "tag": "final",
+ "started_utc": "2026-11-21T21:05:32+00:00",
+ "host": {
+  "cpus": 4,
+  "cpu_model": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "mem_gb": 15.7,
+  "kernel": "6.18.44-fc-v726",
+  "python": "3.13.18"
+ },
+ "steps": {
+  "initial_load": {
+   "total_s": 85.874,
+   "phases": {
+    "insert": 68.985,
+    "optimize": 16.814,
+    "warm": 0.062,
+    "swap": 0.002
+   },
+   "notes": {
+    "parts": 8
+   },
+   "cpu_avg_pct": 67.0,
+   "cpu_max_pct": 100.0,
+   "mem_peak_gb": 3.34,
+   "disk_peak_delta_gb": 8.44,
+   "verify": {
+    "ok": true,
+    "got": [
+     20000000,
+     10001073155.386005,
+     5010344061.789999,
+     19999999
+    ],
+    "want": [
+     20000000,
+     10001073155.3863,
+     5010344061.790356,
+     19999999
+    ]
+   }
+  },
+  "storage": {
+   "table": 2263714228,
+   "index_a": 6102457,
+   "index_b": 109617791,
+   "total": 2379434476,
+   "uncompressed": 9712470323,
+   "parts": 8,
+   "rows_in_parts": 20000000,
+   "primary_key_bytes_in_memory": 9439930,
+   "inactive_parts_bytes": 6640441971,
+   "columns_compressed": {
+    "score": 161152234,
+    "quantity": 106125283,
+    "id": 82679209,
+    "tenant_id": 695073,
+    "description": 1558486119,
+    "period": 1436051,
+    "item_key": 123976495,
+    "price": 95840471,
+    "ref_path": 133174529
+   },
+   "data_dir_bytes": 9021338333
+  },
+  "queries": {
+   "point": {
+    "verified": true,
+    "n": 500,
+    "p50_ms": 4.23,
+    "p95_ms": 6.504,
+    "p99_ms": 10.687,
+    "max_ms": 16.111,
+    "mean_ms": 4.574
+   },
+   "series": {
+    "verified": true,
+    "n": 500,
+    "p50_ms": 12.522,
+    "p95_ms": 19.543,
+    "p99_ms": 25.503,
+    "max_ms": 45.53,
+    "mean_ms": 13.812
+   },
+   "tenant_agg": {
+    "verified": true,
+    "n": 40,
+    "p50_ms": 4.096,
+    "p95_ms": 9.055,
+    "p99_ms": 21.65,
+    "max_ms": 21.65,
+    "mean_ms": 5.268
+   },
+   "full_agg": {
+    "verified": true,
+    "n": 5,
+    "p50_ms": 120.093,
+    "p95_ms": 122.008,
+    "p99_ms": 122.008,
+    "max_ms": 122.008,
+    "mean_ms": 119.061
+   }
+  },
+  "concurrency": {
+   "n": 4723,
+   "p50_ms": 21.572,
+   "p95_ms": 55.123,
+   "p99_ms": 76.668,
+   "max_ms": 136.331,
+   "mean_ms": 25.422,
+   "threads": 8,
+   "seconds": 15.02,
+   "qps": 314.5,
+   "errors": 0
+  },
+  "refresh": [
+   {
+    "total_s": 99.391,
+    "phases": {
+     "insert": 74.491,
+     "optimize": 20.085,
+     "warm": 0.056,
+     "swap": 4.746
+    },
+    "notes": {
+     "parts": 8
+    },
+    "cpu_avg_pct": 77.6,
+    "cpu_max_pct": 100.0,
+    "mem_peak_gb": 3.98,
+    "disk_peak_delta_gb": 8.24,
+    "reader": {
+     "n": 3142,
+     "p50_ms": 8.35,
+     "p95_ms": 27.858,
+     "p99_ms": 47.569,
+     "max_ms": 1005.808,
+     "mean_ms": 12.034,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 1.026,
+     "first_error": null
+    },
+    "verify": {
+     "ok": true,
+     "got": [
+      20000000,
+      10001073155.386,
+      5010344061.79,
+      19999999
+     ],
+     "want": [
+      20000000,
+      10001073155.3863,
+      5010344061.790356,
+      19999999
+     ]
+    }
+   },
+   {
+    "total_s": 97.876,
+    "phases": {
+     "insert": 72.391,
+     "optimize": 19.207,
+     "warm": 0.077,
+     "swap": 6.133
+    },
+    "notes": {
+     "parts": 8
+    },
+    "cpu_avg_pct": 70.6,
+    "cpu_max_pct": 100.0,
+    "mem_peak_gb": 3.65,
+    "disk_peak_delta_gb": 8.44,
+    "reader": {
+     "n": 3154,
+     "p50_ms": 8.276,
+     "p95_ms": 25.809,
+     "p99_ms": 36.066,
+     "max_ms": 231.604,
+     "mean_ms": 11.499,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.252,
+     "first_error": null
+    },
+    "verify": {
+     "ok": true,
+     "got": [
+      20000000,
+      10001073155.386002,
+      5010344061.790001,
+      19999999
+     ],
+     "want": [
+      20000000,
+      10001073155.3863,
+      5010344061.790356,
+      19999999
+     ]
+    }
+   }
+  ],
+  "incremental": {
+   "upsert_1pct": {
+    "total_s": 87.839,
+    "phases": {
+     "insert": 63.165,
+     "optimize": 18.911,
+     "warm": 0.071,
+     "swap": 5.629
+    },
+    "notes": {
+     "parts": 8
+    },
+    "cpu_avg_pct": 64.2,
+    "cpu_max_pct": 100.0,
+    "mem_peak_gb": 3.2,
+    "disk_peak_delta_gb": 6.43,
+    "reader": {
+     "n": 2963,
+     "p50_ms": 7.294,
+     "p95_ms": 21.098,
+     "p99_ms": 29.357,
+     "max_ms": 66.834,
+     "mean_ms": 9.468,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.087,
+     "first_error": null
+    },
+    "rows": 200000,
+    "verify": {
+     "ok": true,
+     "got": [
+      20050000,
+      10025876442.723999,
+      5022872947.550005,
+      20049999
+     ],
+     "want": [
+      20050000,
+      10025876442.723816,
+      5022872947.549857,
+      20049999
+     ]
+    }
+   },
+   "upsert_10pct": {
+    "total_s": 104.25,
+    "phases": {
+     "insert": 80.755,
+     "optimize": 19.759,
+     "warm": 0.077,
+     "swap": 3.648
+    },
+    "notes": {
+     "parts": 8
+    },
+    "cpu_avg_pct": 62.6,
+    "cpu_max_pct": 100.0,
+    "mem_peak_gb": 3.51,
+    "disk_peak_delta_gb": 7.29,
+    "reader": {
+     "n": 3497,
+     "p50_ms": 7.737,
+     "p95_ms": 19.289,
+     "p99_ms": 26.064,
+     "max_ms": 119.305,
+     "mean_ms": 9.606,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.14,
+     "first_error": null
+    },
+    "rows": 2000000,
+    "verify": {
+     "ok": true,
+     "got": [
+      20550000,
+      10276219054.717001,
+      5148355856.309998,
+      20549999
+     ],
+     "want": [
+      20550000,
+      10276219054.717178,
+      5148355856.310099,
+      20549999
+     ]
+    }
+   },
+   "replace_tenant": {
+    "total_s": 27.121,
+    "phases": {
+     "insert": 9.352,
+     "optimize": 17.686,
+     "warm": 0.02,
+     "swap": 0.052
+    },
+    "notes": {
+     "parts": 1
+    },
+    "cpu_avg_pct": 30.9,
+    "cpu_max_pct": 50.7,
+    "mem_peak_gb": 3.2,
+    "disk_peak_delta_gb": 1.11,
+    "rows": 1024980,
+    "verify": {
+     "ok": true,
+     "got": [
+      20546740,
+      10274114565.528992,
+      5147287610.330003,
+      20649999
+     ],
+     "want": [
+      20546740,
+      10274114565.529152,
+      5147287610.330014,
+      20649999
+     ]
+    }
+   }
+  },
+  "storage_after": {
+   "table": 2325605315,
+   "index_a": 6267966,
+   "index_b": 112586425,
+   "total": 2444459706,
+   "uncompressed": 9978017701,
+   "parts": 8,
+   "rows_in_parts": 20546740,
+   "primary_key_bytes_in_memory": 8142510,
+   "inactive_parts_bytes": 5735862617,
+   "columns_compressed": {
+    "score": 165557680,
+    "quantity": 109025415,
+    "id": 84938933,
+    "tenant_id": 713997,
+    "description": 1601080743,
+    "period": 1475184,
+    "item_key": 127397047,
+    "price": 98461717,
+    "ref_path": 136805739
+   },
+   "data_dir_bytes": 8214165822
+  },
+  "queries_after": {
+   "point": {
+    "n": 300,
+    "p50_ms": 4.431,
+    "p95_ms": 6.924,
+    "p99_ms": 9.73,
+    "max_ms": 11.73,
+    "mean_ms": 4.745
+   },
+   "series": {
+    "n": 300,
+    "p50_ms": 13.572,
+    "p95_ms": 20.031,
+    "p99_ms": 23.824,
+    "max_ms": 27.471,
+    "mean_ms": 14.551
+   },
+   "tenant_agg": {
+    "n": 20,
+    "p50_ms": 4.768,
+    "p95_ms": 8.109,
+    "p99_ms": 14.539,
+    "max_ms": 14.539,
+    "mean_ms": 5.888
+   }
+  }
+ },
+ "ok": true,
+ "info": {
+  "image": "clickhouse/clickhouse-server:latest",
+  "image_digest": "clickhouse/clickhouse-server@sha256:4f491abc44d9f4a1747c033c35ddd5bc385521305d85ca8251ba0824ff597035",
+  "server_version": "26.10.4.207",
+  "server_conf": {
+   "max_server_memory_usage": 8589934592,
+   "mark_cache_size": 1073741824,
+   "uncompressed_cache_size": 0
+  },
+  "disabled_system_logs": [
+   "trace_log",
+   "text_log",
+   "metric_log",
+   "asynchronous_metric_log",
+   "processors_profile_log",
+   "opentelemetry_span_log",
+   "query_views_log",
+   "query_thread_log",
+   "session_log",
+   "error_log",
+   "latency_log",
+   "query_metric_log",
+   "asynchronous_insert_log",
+   "backup_log",
+   "blob_storage_log",
+   "crash_log",
+   "s3queue_log",
+   "zookeeper_log",
+   "background_schedule_pool_log",
+   "aggregated_zookeeper_log",
+   "zookeeper_connection_log",
+   "iceberg_metadata_log",
+   "delta_lake_metadata_log",
+   "transactions_info_log"
+  ],
+  "ports": {
+   "http": 58123,
+   "native": 59000,
+   "interserver": 59009
+  },
+  "ddl": "CREATE TABLE big_table (\n    id Int64 CODEC(LZ4),\n    tenant_id Int32 CODEC(LZ4),\n    period Int32 CODEC(LZ4),\n    quantity Float64 CODEC(LZ4),\n    price Float64 CODEC(LZ4),\n    score Float64 CODEC(LZ4),\n    item_key String CODEC(LZ4),\n    ref_path String CODEC(LZ4),\n    description String CODEC(ZSTD(1)),\n    PROJECTION by_ref INDEX (ref_path, period) TYPE basic\n) ENGINE = MergeTree\nPARTITION BY tenant_id % 8\nORDER BY (tenant_id, item_key, period)\nSETTINGS index_granularity = 256, min_compress_block_size = 8192",
+  "insert_settings": {
+   "max_threads": 4,
+   "max_insert_threads": 4
+  },
+  "queries": {
+   "point": {
+    "sql": "SELECT id, tenant_id, period, quantity, price, score, item_key, ref_path, description FROM big_table WHERE tenant_id = {p0:Int32} AND item_key = {p1:String} AND period = {p2:Int32}",
+    "settings": {
+     "max_threads": 1
+    }
+   },
+   "series": {
+    "sql": "SELECT period, quantity, price, score FROM big_table WHERE ref_path = {p0:String} AND period BETWEEN {p1:Int32} AND {p2:Int32} ORDER BY period",
+    "settings": {
+     "max_threads": 1,
+     "min_table_rows_to_use_projection_index": 0
+    }
+   },
+   "tenant_agg": {
+    "sql": "SELECT period, count() AS cnt, sum(quantity * price) AS revenue, avg(score) AS avg_score FROM big_table WHERE tenant_id = {p0:Int32} GROUP BY period ORDER BY period",
+    "settings": {}
+   },
+   "full_agg": {
+    "sql": "SELECT tenant_id, count() AS cnt, sum(quantity) AS sum_qty, avg(price) AS avg_price FROM big_table GROUP BY tenant_id ORDER BY cnt DESC, tenant_id ASC LIMIT 20",
+    "settings": {}
+   }
+  },
+  "client": "python http.client, HTTP keep-alive, JSONCompactEachRow",
+  "durability_defaults_unchanged": {
+   "old_parts_lifetime": "480",
+   "min_rows_to_fsync_after_merge": "0",
+   "min_compressed_bytes_to_fsync_after_merge": "0",
+   "fsync_after_insert": "0",
+   "fsync_part_directory": "0"
+  },
+  "statistics": "none needed: the sparse primary index is written with each part"
+ },
+ "wall_s": 543.2
+}

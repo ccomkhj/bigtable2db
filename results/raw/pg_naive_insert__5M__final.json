@@ -1,0 +1,295 @@
+{
+ "solution": "pg_naive_insert",
+ "engine": "postgres",
+ "strategy": "TRUNCATE + batched multi-row INSERT (5,000 rows/statement) into the indexed live table",
+ "atomic_swap": false,
+ "scale": "5M",
+ "rows": 5000000,
+ "reps": 1,
+ "tag": "final",
+ "started_utc": "2026-11-21T20:31:01+00:00",
+ "host": {
+  "cpus": 4,
+  "cpu_model": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "mem_gb": 15.7,
+  "kernel": "6.18.44-fc-v726",
+  "python": "3.13.18"
+ },
+ "steps": {
+  "initial_load": {
+   "total_s": 178.565,
+   "phases": {
+    "truncate": 0.001,
+    "insert_with_indexes": 178.008,
+    "commit": 0.044,
+    "analyze": 0.497
+   },
+   "notes": {},
+   "cpu_avg_pct": 26.8,
+   "cpu_max_pct": 33.5,
+   "mem_peak_gb": 5.26,
+   "disk_peak_delta_gb": 9.71,
+   "verify": {
+    "ok": true,
+    "got": [
+     5000000,
+     2500036124.131963,
+     1252488814.4500453,
+     4999999
+    ],
+    "want": [
+     5000000,
+     2500036124.1320095,
+     1252488814.4500453,
+     4999999
+    ]
+   }
+  },
+  "storage": {
+   "table": 2566176768,
+   "index_a": 1080918016,
+   "index_b": 1087389696,
+   "total": 4734484480,
+   "database": 4742313651,
+   "indexes": {
+    "big_table_a": 1080918016,
+    "big_table_b": 1087389696
+   },
+   "data_dir_bytes": 10462674647
+  },
+  "queries": {
+   "point": {
+    "verified": true,
+    "n": 500,
+    "p50_ms": 0.108,
+    "p95_ms": 0.151,
+    "p99_ms": 0.25,
+    "max_ms": 0.612,
+    "mean_ms": 0.115
+   },
+   "series": {
+    "verified": true,
+    "n": 500,
+    "p50_ms": 0.102,
+    "p95_ms": 0.133,
+    "p99_ms": 0.249,
+    "max_ms": 0.505,
+    "mean_ms": 0.108
+   },
+   "tenant_agg": {
+    "verified": true,
+    "n": 40,
+    "p50_ms": 6.58,
+    "p95_ms": 19.257,
+    "p99_ms": 116.011,
+    "max_ms": 116.011,
+    "mean_ms": 10.293
+   },
+   "full_agg": {
+    "verified": true,
+    "n": 5,
+    "p50_ms": 544.23,
+    "p95_ms": 576.1,
+    "p99_ms": 576.1,
+    "max_ms": 576.1,
+    "mean_ms": 548.652
+   }
+  },
+  "concurrency": {
+   "n": 69991,
+   "p50_ms": 1.584,
+   "p95_ms": 3.101,
+   "p99_ms": 4.293,
+   "max_ms": 25.542,
+   "mean_ms": 1.714,
+   "threads": 8,
+   "seconds": 15.01,
+   "qps": 4663.4,
+   "errors": 0
+  },
+  "refresh": [],
+  "incremental": {
+   "upsert_1pct": {
+    "total_s": 3.037,
+    "phases": {
+     "stage_copy": 0.237,
+     "merge": 2.737,
+     "commit": 0.06
+    },
+    "notes": {},
+    "cpu_avg_pct": 24.1,
+    "cpu_max_pct": 29.4,
+    "mem_peak_gb": 5.15,
+    "disk_peak_delta_gb": 0.24,
+    "reader": {
+     "n": 147,
+     "p50_ms": 0.467,
+     "p95_ms": 0.792,
+     "p99_ms": 4.04,
+     "max_ms": 7.038,
+     "mean_ms": 0.577,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.024,
+     "first_error": null
+    },
+    "rows": 50000,
+    "verify": {
+     "ok": true,
+     "got": [
+      5012500,
+      2506180739.1849756,
+      1255660231.4500322,
+      5012499
+     ],
+     "want": [
+      5012500,
+      2506180739.1849794,
+      1255660231.4500375,
+      5012499
+     ]
+    }
+   },
+   "upsert_10pct": {
+    "total_s": 19.092,
+    "phases": {
+     "stage_copy": 2.33,
+     "merge": 16.612,
+     "commit": 0.147
+    },
+    "notes": {},
+    "cpu_avg_pct": 26.5,
+    "cpu_max_pct": 35.5,
+    "mem_peak_gb": 5.35,
+    "disk_peak_delta_gb": 1.34,
+    "reader": {
+     "n": 919,
+     "p50_ms": 0.427,
+     "p95_ms": 0.762,
+     "p99_ms": 2.87,
+     "max_ms": 64.213,
+     "mean_ms": 0.581,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.084,
+     "first_error": null
+    },
+    "rows": 500000,
+    "verify": {
+     "ok": true,
+     "got": [
+      5137500,
+      2568451675.998021,
+      1286885366.2300262,
+      5137499
+     ],
+     "want": [
+      5137500,
+      2568451675.998023,
+      1286885366.2299876,
+      5137499
+     ]
+    }
+   },
+   "replace_tenant": {
+    "total_s": 5.402,
+    "phases": {
+     "delete": 0.901,
+     "copy": 4.494,
+     "commit": 0.003
+    },
+    "notes": {},
+    "cpu_avg_pct": 27.7,
+    "cpu_max_pct": 32.3,
+    "mem_peak_gb": 5.37,
+    "disk_peak_delta_gb": 0.37,
+    "rows": 257580,
+    "verify": {
+     "ok": true,
+     "got": [
+      5135880,
+      2567786667.140009,
+      1286531952.0299897,
+      5162499
+     ],
+     "want": [
+      5135880,
+      2567786667.1400175,
+      1286531952.0299716,
+      5162499
+     ]
+    }
+   }
+  },
+  "storage_after": {
+   "table": 2975203328,
+   "index_a": 1149313024,
+   "index_b": 1148985344,
+   "total": 5273501696,
+   "database": 5281330867,
+   "indexes": {
+    "big_table_a": 1149313024,
+    "big_table_b": 1148985344
+   },
+   "data_dir_bytes": 12343869143
+  },
+  "queries_after": {
+   "point": {
+    "n": 300,
+    "p50_ms": 0.107,
+    "p95_ms": 0.152,
+    "p99_ms": 0.357,
+    "max_ms": 0.741,
+    "mean_ms": 0.116
+   },
+   "series": {
+    "n": 300,
+    "p50_ms": 0.116,
+    "p95_ms": 0.209,
+    "p99_ms": 0.335,
+    "max_ms": 9.306,
+    "mean_ms": 0.161
+   },
+   "tenant_agg": {
+    "n": 20,
+    "p50_ms": 6.75,
+    "p95_ms": 34.689,
+    "p99_ms": 213.96,
+    "max_ms": 213.96,
+    "mean_ms": 19.255
+   }
+  }
+ },
+ "ok": true,
+ "info": {
+  "image": "postgres:17",
+  "server_version": "17.12 (Debian 17.12-1.pgdg13+1)",
+  "db_collation": "en_US.utf8",
+  "text_key_collation": "en_US.utf8",
+  "conf": {
+   "shared_buffers": "4GB",
+   "effective_cache_size": "10GB",
+   "work_mem": "64MB",
+   "maintenance_work_mem": "1GB",
+   "max_wal_size": "8GB",
+   "min_wal_size": "1GB",
+   "checkpoint_timeout": "15min",
+   "checkpoint_completion_target": "0.9",
+   "wal_compression": "lz4",
+   "max_worker_processes": "8",
+   "max_parallel_workers": "4",
+   "max_parallel_workers_per_gather": "2",
+   "max_parallel_maintenance_workers": "2",
+   "random_page_cost": "1.1",
+   "effective_io_concurrency": "200",
+   "max_connections": "100",
+   "listen_addresses": "127.0.0.1"
+  },
+  "insert": {
+   "rows_per_statement": 5000,
+   "driver": "psycopg 3.3.9",
+   "statement": "INSERT ... VALUES (%s, ...), ... with bound parameters, one transaction"
+  }
+ },
+ "wall_s": 233.0
+}

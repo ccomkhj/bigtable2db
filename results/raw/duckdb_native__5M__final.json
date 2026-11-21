@@ -1,0 +1,384 @@
+{
+ "solution": "duckdb_native",
+ "engine": "duckdb",
+ "strategy": "build a new DuckDB database file (table sorted by business key + projection sorted by ref_path, zone maps only, no ART), switch pointer atomically; read-only attach in-process",
+ "atomic_swap": true,
+ "scale": "5M",
+ "rows": 5000000,
+ "reps": 3,
+ "tag": "final",
+ "started_utc": "2026-11-21T20:18:34+00:00",
+ "host": {
+  "cpus": 4,
+  "cpu_model": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "mem_gb": 15.7,
+  "kernel": "6.18.44-fc-v726",
+  "python": "3.13.18"
+ },
+ "steps": {
+  "initial_load": {
+   "total_s": 9.607,
+   "phases": {
+    "plan": 0.021,
+    "a_sort_insert": 7.743,
+    "b_plan": 0.0,
+    "b_sort_insert": 1.696,
+    "checkpoint": 0.008,
+    "publish": 0.002
+   },
+   "notes": {
+    "a_sort_passes": 1,
+    "b_sort_passes": 1
+   },
+   "cpu_avg_pct": 86.9,
+   "cpu_max_pct": 100.0,
+   "mem_peak_gb": 4.37,
+   "disk_peak_delta_gb": 0.69,
+   "verify": {
+    "ok": true,
+    "got": [
+     5000000,
+     2500036124.13201,
+     1252488814.4499917,
+     4999999
+    ],
+    "want": [
+     5000000,
+     2500036124.1320095,
+     1252488814.4500453,
+     4999999
+    ]
+   }
+  },
+  "storage": {
+   "total": 735588352,
+   "used_bytes": 735576064,
+   "free_bytes": 0,
+   "index_a": 0,
+   "note": "one database file holding big_table (sorted) and big_table_b (projection); data_dir_bytes also contains the previous snapshot, kept until the next publish",
+   "data_dir_bytes": 735588369
+  },
+  "queries": {
+   "point": {
+    "verified": true,
+    "n": 500,
+    "p50_ms": 2.054,
+    "p95_ms": 4.245,
+    "p99_ms": 7.168,
+    "max_ms": 22.29,
+    "mean_ms": 2.331
+   },
+   "series": {
+    "verified": true,
+    "n": 500,
+    "p50_ms": 1.904,
+    "p95_ms": 3.025,
+    "p99_ms": 4.381,
+    "max_ms": 7.678,
+    "mean_ms": 2.06
+   },
+   "tenant_agg": {
+    "verified": true,
+    "n": 40,
+    "p50_ms": 1.663,
+    "p95_ms": 2.134,
+    "p99_ms": 3.554,
+    "max_ms": 3.554,
+    "mean_ms": 1.774
+   },
+   "full_agg": {
+    "verified": true,
+    "n": 5,
+    "p50_ms": 8.934,
+    "p95_ms": 10.008,
+    "p99_ms": 10.008,
+    "max_ms": 10.008,
+    "mean_ms": 8.987
+   }
+  },
+  "concurrency": {
+   "n": 24299,
+   "p50_ms": 4.251,
+   "p95_ms": 10.778,
+   "p99_ms": 14.56,
+   "max_ms": 37.781,
+   "mean_ms": 4.937,
+   "threads": 8,
+   "seconds": 15.0,
+   "qps": 1619.5,
+   "errors": 0
+  },
+  "refresh": [
+   {
+    "total_s": 9.584,
+    "phases": {
+     "plan": 0.011,
+     "a_sort_insert": 7.491,
+     "b_plan": 0.0,
+     "b_sort_insert": 1.912,
+     "checkpoint": 0.008,
+     "publish": 0.004
+    },
+    "notes": {
+     "a_sort_passes": 1,
+     "b_sort_passes": 1
+    },
+    "cpu_avg_pct": 86.6,
+    "cpu_max_pct": 100.0,
+    "mem_peak_gb": 4.8,
+    "disk_peak_delta_gb": 0.69,
+    "reader": {
+     "n": 474,
+     "p50_ms": 2.968,
+     "p95_ms": 9.049,
+     "p99_ms": 15.724,
+     "max_ms": 36.858,
+     "mean_ms": 4.182,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.057,
+     "first_error": null
+    },
+    "verify": {
+     "ok": true,
+     "got": [
+      5000000,
+      2500036124.1320286,
+      1252488814.4499874,
+      4999999
+     ],
+     "want": [
+      5000000,
+      2500036124.1320095,
+      1252488814.4500453,
+      4999999
+     ]
+    }
+   },
+   {
+    "total_s": 8.872,
+    "phases": {
+     "plan": 0.013,
+     "a_sort_insert": 7.036,
+     "b_plan": 0.0,
+     "b_sort_insert": 1.672,
+     "checkpoint": 0.008,
+     "publish": 0.004
+    },
+    "notes": {
+     "a_sort_passes": 1,
+     "b_sort_passes": 1
+    },
+    "cpu_avg_pct": 89.2,
+    "cpu_max_pct": 100.0,
+    "mem_peak_gb": 4.96,
+    "disk_peak_delta_gb": 0.67,
+    "reader": {
+     "n": 437,
+     "p50_ms": 2.896,
+     "p95_ms": 8.055,
+     "p99_ms": 13.054,
+     "max_ms": 329.98,
+     "mean_ms": 4.611,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.35,
+     "first_error": null
+    },
+    "verify": {
+     "ok": true,
+     "got": [
+      5000000,
+      2500036124.1319914,
+      1252488814.4499996,
+      4999999
+     ],
+     "want": [
+      5000000,
+      2500036124.1320095,
+      1252488814.4500453,
+      4999999
+     ]
+    }
+   }
+  ],
+  "incremental": {
+   "upsert_1pct": {
+    "total_s": 2.021,
+    "phases": {
+     "copy_file": 0.239,
+     "stage": 0.093,
+     "merge_a": 0.151,
+     "merge_b": 0.126,
+     "commit_checkpoint": 1.343,
+     "publish": 0.002
+    },
+    "notes": {},
+    "cpu_avg_pct": 26.3,
+    "cpu_max_pct": 36.6,
+    "mem_peak_gb": 2.0,
+    "disk_peak_delta_gb": 0.73,
+    "reader": {
+     "n": 87,
+     "p50_ms": 2.573,
+     "p95_ms": 5.721,
+     "p99_ms": 11.97,
+     "max_ms": 11.97,
+     "mean_ms": 3.061,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.032,
+     "first_error": null
+    },
+    "rows": 50000,
+    "verify": {
+     "ok": true,
+     "got": [
+      5012500,
+      2506180739.1849446,
+      1255660231.4500132,
+      5012499
+     ],
+     "want": [
+      5012500,
+      2506180739.1849794,
+      1255660231.4500375,
+      5012499
+     ]
+    }
+   },
+   "upsert_10pct": {
+    "total_s": 4.675,
+    "phases": {
+     "copy_file": 0.241,
+     "stage": 0.444,
+     "merge_a": 0.92,
+     "merge_b": 0.448,
+     "commit_checkpoint": 2.524,
+     "publish": 0.003
+    },
+    "notes": {},
+    "cpu_avg_pct": 48.2,
+    "cpu_max_pct": 99.0,
+    "mem_peak_gb": 2.31,
+    "disk_peak_delta_gb": 0.84,
+    "reader": {
+     "n": 187,
+     "p50_ms": 3.724,
+     "p95_ms": 9.567,
+     "p99_ms": 20.054,
+     "max_ms": 21.948,
+     "mean_ms": 4.844,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.042,
+     "first_error": null
+    },
+    "rows": 500000,
+    "verify": {
+     "ok": true,
+     "got": [
+      5137500,
+      2568451675.9979973,
+      1286885366.229969,
+      5137499
+     ],
+     "want": [
+      5137500,
+      2568451675.998023,
+      1286885366.2299876,
+      5137499
+     ]
+    }
+   },
+   "replace_tenant": {
+    "total_s": 3.248,
+    "phases": {
+     "copy_file": 0.253,
+     "replace_a": 0.655,
+     "replace_b": 0.16,
+     "commit_checkpoint": 2.114,
+     "publish": 0.002
+    },
+    "notes": {},
+    "cpu_avg_pct": 27.7,
+    "cpu_max_pct": 51.7,
+    "mem_peak_gb": 2.02,
+    "disk_peak_delta_gb": 0.86,
+    "rows": 257580,
+    "verify": {
+     "ok": true,
+     "got": [
+      5135880,
+      2567786667.140063,
+      1286531952.0299807,
+      5162499
+     ],
+     "want": [
+      5135880,
+      2567786667.1400175,
+      1286531952.0299716,
+      5162499
+     ]
+    }
+   }
+  },
+  "storage_after": {
+   "total": 926429184,
+   "used_bytes": 846987264,
+   "free_bytes": 79429632,
+   "index_a": 0,
+   "note": "one database file holding big_table (sorted) and big_table_b (projection); data_dir_bytes also contains the previous snapshot, kept until the next publish",
+   "data_dir_bytes": 1829265425
+  },
+  "queries_after": {
+   "point": {
+    "n": 300,
+    "p50_ms": 2.464,
+    "p95_ms": 3.503,
+    "p99_ms": 4.022,
+    "max_ms": 5.209,
+    "mean_ms": 2.536
+   },
+   "series": {
+    "n": 300,
+    "p50_ms": 3.898,
+    "p95_ms": 5.432,
+    "p99_ms": 7.657,
+    "max_ms": 16.254,
+    "mean_ms": 4.134
+   },
+   "tenant_agg": {
+    "n": 20,
+    "p50_ms": 2.473,
+    "p95_ms": 6.258,
+    "p99_ms": 8.616,
+    "max_ms": 8.616,
+    "mean_ms": 3.054
+   }
+  }
+ },
+ "ok": true,
+ "info": {
+  "duckdb_version": "2.0.1",
+  "server": "none (embedded, in-process)",
+  "load": {
+   "threads": 4,
+   "memory_limit": "8GB",
+   "sort_pass_rows_a": 6000000,
+   "sort_pass_rows_b": 10000000
+  },
+  "serve": {
+   "threads": 4,
+   "memory_limit": "2GB",
+   "model": "one DuckDB instance per process, one cursor per worker thread, CURRENT pointer checked with stat() before every query"
+  },
+  "durability": "new files are fsync'ed before the pointer is switched (rename)",
+  "native": {
+   "indexes": "none (zone maps on sorted data); ART measured and rejected, see notes",
+   "projection_b_columns": "ref_path, period, tenant_id, item_key, quantity, price, score",
+   "maintenance": "copy file, SQL in the copy, switch pointer"
+  }
+ },
+ "wall_s": 63.4
+}

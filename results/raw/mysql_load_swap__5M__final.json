@@ -1,0 +1,326 @@
+{
+ "solution": "mysql_load_swap",
+ "engine": "mysql",
+ "strategy": "new InnoDB table clustered on id, 4 parallel LOAD DATA LOCAL INFILE streams, both secondary indexes added afterwards in one ALTER, ANALYZE, atomic RENAME TABLE (binlog on)",
+ "atomic_swap": true,
+ "scale": "5M",
+ "rows": 5000000,
+ "reps": 2,
+ "tag": "final",
+ "started_utc": "2026-11-21T20:20:56+00:00",
+ "host": {
+  "cpus": 4,
+  "cpu_model": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "mem_gb": 15.7,
+  "kernel": "6.18.44-fc-v726",
+  "python": "3.13.18"
+ },
+ "steps": {
+  "initial_load": {
+   "total_s": 66.471,
+   "phases": {
+    "load_data": 32.32,
+    "add_indexes": 34.107,
+    "analyze": 0.014,
+    "swap": 0.009
+   },
+   "notes": {},
+   "cpu_avg_pct": 49.2,
+   "cpu_max_pct": 100.0,
+   "mem_peak_gb": 8.75,
+   "disk_peak_delta_gb": 7.45,
+   "verify": {
+    "ok": true,
+    "got": [
+     5000000,
+     2500036124.1319733,
+     1252488814.4500136,
+     4999999
+    ],
+    "want": [
+     5000000,
+     2500036124.1320095,
+     1252488814.4500453,
+     4999999
+    ]
+   }
+  },
+  "storage": {
+   "table": 2783969280,
+   "index_a": 767557632,
+   "index_b": 769654784,
+   "total": 4370464768,
+   "indexes": {
+    "PRIMARY": 2783969280,
+    "idx_a": 767557632,
+    "idx_b": 769654784
+   },
+   "data_dir_bytes": 15506293059
+  },
+  "queries": {
+   "point": {
+    "verified": true,
+    "n": 500,
+    "p50_ms": 0.418,
+    "p95_ms": 0.599,
+    "p99_ms": 0.831,
+    "max_ms": 3.878,
+    "mean_ms": 0.428
+   },
+   "series": {
+    "verified": true,
+    "n": 500,
+    "p50_ms": 0.384,
+    "p95_ms": 0.789,
+    "p99_ms": 1.647,
+    "max_ms": 2.79,
+    "mean_ms": 0.454
+   },
+   "tenant_agg": {
+    "verified": true,
+    "n": 40,
+    "p50_ms": 18.656,
+    "p95_ms": 78.481,
+    "p99_ms": 354.936,
+    "max_ms": 354.936,
+    "mean_ms": 34.683
+   },
+   "full_agg": {
+    "verified": true,
+    "n": 5,
+    "p50_ms": 6565.071,
+    "p95_ms": 6830.922,
+    "p99_ms": 6830.922,
+    "max_ms": 6830.922,
+    "mean_ms": 6635.498
+   }
+  },
+  "concurrency": {
+   "n": 70159,
+   "p50_ms": 1.499,
+   "p95_ms": 3.525,
+   "p99_ms": 4.955,
+   "max_ms": 29.204,
+   "mean_ms": 1.71,
+   "threads": 8,
+   "seconds": 15.01,
+   "qps": 4675.0,
+   "errors": 0
+  },
+  "refresh": [
+   {
+    "total_s": 96.132,
+    "phases": {
+     "load_data": 32.746,
+     "add_indexes": 61.563,
+     "analyze": 0.015,
+     "swap": 1.79
+    },
+    "notes": {},
+    "cpu_avg_pct": 46.3,
+    "cpu_max_pct": 99.5,
+    "mem_peak_gb": 9.31,
+    "disk_peak_delta_gb": 7.36,
+    "reader": {
+     "n": 4164,
+     "p50_ms": 0.84,
+     "p95_ms": 6.23,
+     "p99_ms": 61.334,
+     "max_ms": 472.389,
+     "mean_ms": 3.34,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.492,
+     "first_error": null
+    },
+    "verify": {
+     "ok": true,
+     "got": [
+      5000000,
+      2500036124.1319733,
+      1252488814.4500136,
+      4999999
+     ],
+     "want": [
+      5000000,
+      2500036124.1320095,
+      1252488814.4500453,
+      4999999
+     ]
+    }
+   }
+  ],
+  "incremental": {
+   "upsert_1pct": {
+    "total_s": 1.74,
+    "phases": {
+     "stage_load": 0.32,
+     "merge": 1.287,
+     "commit": 0.121
+    },
+    "notes": {},
+    "cpu_avg_pct": 35.7,
+    "cpu_max_pct": 39.3,
+    "mem_peak_gb": 6.39,
+    "disk_peak_delta_gb": 0.1,
+    "reader": {
+     "n": 81,
+     "p50_ms": 0.72,
+     "p95_ms": 3.085,
+     "p99_ms": 29.666,
+     "max_ms": 29.666,
+     "mean_ms": 1.562,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.05,
+     "first_error": null
+    },
+    "rows": 50000,
+    "verify": {
+     "ok": true,
+     "got": [
+      5012500,
+      2506180739.184969,
+      1255660231.4500098,
+      5012499
+     ],
+     "want": [
+      5012500,
+      2506180739.1849794,
+      1255660231.4500375,
+      5012499
+     ]
+    }
+   },
+   "upsert_10pct": {
+    "total_s": 16.96,
+    "phases": {
+     "stage_load": 2.931,
+     "merge": 13.198,
+     "commit": 0.811
+    },
+    "notes": {},
+    "cpu_avg_pct": 34.8,
+    "cpu_max_pct": 47.8,
+    "mem_peak_gb": 6.57,
+    "disk_peak_delta_gb": 1.43,
+    "reader": {
+     "n": 796,
+     "p50_ms": 0.627,
+     "p95_ms": 1.821,
+     "p99_ms": 5.429,
+     "max_ms": 226.669,
+     "mean_ms": 1.187,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.247,
+     "first_error": null
+    },
+    "rows": 500000,
+    "verify": {
+     "ok": true,
+     "got": [
+      5137500,
+      2568451675.997987,
+      1286885366.2299592,
+      5137499
+     ],
+     "want": [
+      5137500,
+      2568451675.998023,
+      1286885366.2299876,
+      5137499
+     ]
+    }
+   },
+   "replace_tenant": {
+    "total_s": 13.59,
+    "phases": {
+     "delete": 4.6,
+     "load_data": 8.484,
+     "commit": 0.495
+    },
+    "notes": {},
+    "cpu_avg_pct": 33.3,
+    "cpu_max_pct": 39.5,
+    "mem_peak_gb": 6.66,
+    "disk_peak_delta_gb": 0.46,
+    "rows": 257580,
+    "verify": {
+     "ok": true,
+     "got": [
+      5135880,
+      2567786667.140012,
+      1286531952.0299375,
+      5162499
+     ],
+     "want": [
+      5135880,
+      2567786667.1400175,
+      1286531952.0299716,
+      5162499
+     ]
+    }
+   }
+  },
+  "storage_after": {
+   "table": 2861563904,
+   "index_a": 904871936,
+   "index_b": 912261120,
+   "total": 4735369216,
+   "indexes": {
+    "PRIMARY": 2861563904,
+    "idx_a": 904871936,
+    "idx_b": 912261120
+   },
+   "data_dir_bytes": 19267136658
+  },
+  "queries_after": {
+   "point": {
+    "n": 300,
+    "p50_ms": 0.233,
+    "p95_ms": 0.452,
+    "p99_ms": 0.85,
+    "max_ms": 3.475,
+    "mean_ms": 0.278
+   },
+   "series": {
+    "n": 300,
+    "p50_ms": 0.305,
+    "p95_ms": 0.517,
+    "p99_ms": 0.609,
+    "max_ms": 0.712,
+    "mean_ms": 0.325
+   },
+   "tenant_agg": {
+    "n": 20,
+    "p50_ms": 18.905,
+    "p95_ms": 105.086,
+    "p99_ms": 422.62,
+    "max_ms": 422.62,
+    "mean_ms": 48.849
+   }
+  }
+ },
+ "ok": true,
+ "info": {
+  "image": "mysql:8.4",
+  "server_version": "8.4.13",
+  "variables": {
+   "log_bin": 1,
+   "sync_binlog": 1,
+   "innodb_flush_log_at_trx_commit": 1,
+   "innodb_buffer_pool_size": 4294967296,
+   "innodb_redo_log_capacity": 8589934592,
+   "innodb_flush_method": "O_DIRECT",
+   "innodb_doublewrite": "ON",
+   "binlog_format": "ROW",
+   "innodb_ddl_threads": 4,
+   "innodb_ddl_buffer_size": 1073741824
+  },
+  "pk_design": "id",
+  "streams": 4,
+  "client": "pymysql (pure Python)"
+ },
+ "wall_s": 283.6
+}

@@ -1,0 +1,208 @@
+{
+ "solution": "pg_unlogged_setlogged",
+ "engine": "postgres",
+ "strategy": "pg_unlogged_swap + ALTER TABLE SET LOGGED before the rename (durable again; shows what SET LOGGED costs)",
+ "atomic_swap": true,
+ "scale": "20M",
+ "rows": 20000000,
+ "reps": 3,
+ "tag": "final",
+ "started_utc": "2026-11-21T23:09:50+00:00",
+ "host": {
+  "cpus": 4,
+  "cpu_model": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "mem_gb": 15.7,
+  "kernel": "6.18.44-fc-v726",
+  "python": "3.13.18"
+ },
+ "steps": {
+  "initial_load": {
+   "total_s": 188.629,
+   "phases": {
+    "copy": 33.285,
+    "index_a": 26.932,
+    "index_b": 29.472,
+    "index": 29.48,
+    "analyze": 1.182,
+    "set_logged": 124.647,
+    "swap": 0.011
+   },
+   "notes": {},
+   "cpu_avg_pct": 40.8,
+   "cpu_max_pct": 100.0,
+   "mem_peak_gb": 4.27,
+   "disk_peak_delta_gb": 41.1,
+   "verify": {
+    "ok": true,
+    "got": [
+     20000000,
+     10001073155.385881,
+     5010344061.7900095,
+     19999999
+    ],
+    "want": [
+     20000000,
+     10001073155.3863,
+     5010344061.790356,
+     19999999
+    ]
+   }
+  },
+  "storage": {
+   "table": 10272382976,
+   "index_a": 3080552448,
+   "index_b": 3088932864,
+   "total": 16441868288,
+   "database": 16449697459,
+   "indexes": {
+    "big_table_a": 3080552448,
+    "big_table_b": 3088932864
+   },
+   "data_dir_bytes": 25055739607
+  },
+  "refresh": [
+   {
+    "total_s": 181.379,
+    "phases": {
+     "copy": 35.507,
+     "index_a": 56.141,
+     "index_b": 58.496,
+     "index": 58.502,
+     "analyze": 0.673,
+     "set_logged": 86.654
+    },
+    "notes": {},
+    "cpu_avg_pct": 40.2,
+    "cpu_max_pct": 100.0,
+    "mem_peak_gb": 3.62,
+    "disk_peak_delta_gb": 28.29,
+    "error": "Traceback (most recent call last):\n  File \"/home/user/bigtable2db/bench/run.py\", line 185, in timed\n    fn(*args, phases)\n    ~~^^^^^^^^^^^^^^^\n  File \"/home/user/bigtable2db/bench/solutions/pg_strategies.py\", line 322, in full_refresh\n    load_new_table(self.dsn, ds.base_files, self.opts, phases, collate_c=self.collate_c)\n    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/user/bigtable2db/bench/solutions/pg_strategies.py\", line 312, in load_new_table\n    c.execute(f\"ALTER TABLE {table} SET LOGGED\")\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/user/bigtable2db/.venv/lib/python3.13/site-packages/psycopg/connection.py\", line 304, in execute\n    raise ex.with_traceback(None)\npsycopg.errors.DiskFull: could not extend file \"base/5/16421\": No space left on device\nHINT:  Check free disk space.\n",
+    "reader": {
+     "n": 7417,
+     "p50_ms": 0.516,
+     "p95_ms": 8.064,
+     "p99_ms": 114.322,
+     "max_ms": 546.826,
+     "mean_ms": 4.495,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.567,
+     "first_error": null
+    },
+    "verify": {
+     "ok": true,
+     "got": [
+      20000000,
+      10001073155.385702,
+      5010344061.789992,
+      19999999
+     ],
+     "want": [
+      20000000,
+      10001073155.3863,
+      5010344061.790356,
+      19999999
+     ]
+    }
+   },
+   {
+    "total_s": 175.191,
+    "phases": {
+     "copy": 33.257,
+     "index_a": 47.406,
+     "index_b": 47.973,
+     "index": 47.979,
+     "analyze": 1.762,
+     "set_logged": 86.547
+    },
+    "notes": {},
+    "cpu_avg_pct": 41.6,
+    "cpu_max_pct": 100.0,
+    "mem_peak_gb": 3.65,
+    "disk_peak_delta_gb": 12.95,
+    "error": "Traceback (most recent call last):\n  File \"/home/user/bigtable2db/bench/run.py\", line 185, in timed\n    fn(*args, phases)\n    ~~^^^^^^^^^^^^^^^\n  File \"/home/user/bigtable2db/bench/solutions/pg_strategies.py\", line 322, in full_refresh\n    load_new_table(self.dsn, ds.base_files, self.opts, phases, collate_c=self.collate_c)\n    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/user/bigtable2db/bench/solutions/pg_strategies.py\", line 312, in load_new_table\n    c.execute(f\"ALTER TABLE {table} SET LOGGED\")\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/user/bigtable2db/.venv/lib/python3.13/site-packages/psycopg/connection.py\", line 304, in execute\n    raise ex.with_traceback(None)\npsycopg.errors.DiskFull: could not extend file \"base/5/16437\": No space left on device\nHINT:  Check free disk space.\n",
+    "reader": {
+     "n": 8445,
+     "p50_ms": 0.406,
+     "p95_ms": 1.766,
+     "p99_ms": 5.856,
+     "max_ms": 67.304,
+     "mean_ms": 0.707,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.25,
+     "first_error": null
+    },
+    "verify": {
+     "ok": true,
+     "got": [
+      20000000,
+      10001073155.385904,
+      5010344061.790021,
+      19999999
+     ],
+     "want": [
+      20000000,
+      10001073155.3863,
+      5010344061.790356,
+      19999999
+     ]
+    }
+   }
+  ]
+ },
+ "ok": false,
+ "info": {
+  "image": "postgres:17",
+  "server_version": "17.12 (Debian 17.12-1.pgdg13+1)",
+  "db_collation": "en_US.utf8",
+  "text_key_collation": "C",
+  "conf": {
+   "shared_buffers": "4GB",
+   "effective_cache_size": "10GB",
+   "work_mem": "64MB",
+   "maintenance_work_mem": "1GB",
+   "max_wal_size": "8GB",
+   "min_wal_size": "1GB",
+   "checkpoint_timeout": "15min",
+   "checkpoint_completion_target": "0.9",
+   "wal_compression": "lz4",
+   "max_worker_processes": "8",
+   "max_parallel_workers": "4",
+   "max_parallel_workers_per_gather": "2",
+   "max_parallel_maintenance_workers": "2",
+   "random_page_cost": "1.1",
+   "effective_io_concurrency": "200",
+   "max_connections": "100",
+   "listen_addresses": "127.0.0.1"
+  },
+  "load_options": {
+   "streams": 4,
+   "encoder": "csv",
+   "workers": "threads",
+   "batch_rows": 50000,
+   "arrow_threads": false,
+   "unlogged": true,
+   "single_txn": false,
+   "freeze": false,
+   "sync_commit_off": true,
+   "maintenance_work_mem": "1GB",
+   "index_workers": 1,
+   "index_concurrent": true,
+   "index_fillfactor": null,
+   "set_logged": true
+  },
+  "session_settings": {
+   "copy": {
+    "synchronous_commit": "off"
+   },
+   "index": {
+    "synchronous_commit": "off",
+    "maintenance_work_mem": "1GB",
+    "max_parallel_maintenance_workers": "1"
+   }
+  },
+  "conf_overrides": {}
+ },
+ "wall_s": 579.9
+}

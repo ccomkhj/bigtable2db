@@ -1,0 +1,3828 @@
+{
+ "scale": "1M",
+ "rows": 1000000,
+ "conf": {
+  "shared_buffers": "4GB",
+  "effective_cache_size": "10GB",
+  "work_mem": "64MB",
+  "maintenance_work_mem": "1GB",
+  "max_wal_size": "8GB",
+  "min_wal_size": "1GB",
+  "checkpoint_timeout": "15min",
+  "checkpoint_completion_target": "0.9",
+  "wal_compression": "lz4",
+  "max_worker_processes": "8",
+  "max_parallel_workers": "4",
+  "max_parallel_workers_per_gather": "2",
+  "max_parallel_maintenance_workers": "2",
+  "random_page_cost": "1.1",
+  "effective_io_concurrency": "200",
+  "max_connections": "100",
+  "listen_addresses": "127.0.0.1"
+ },
+ "suites": {
+  "pipeline": {
+   "mode": "full",
+   "variants": [
+    {
+     "variant": "pg_copy_swap (1 stream, serial indexes, default collation)",
+     "min_s": 7.801,
+     "median_s": 7.806,
+     "client_cpu_s": 1.64,
+     "server_cpu_s": 8.51,
+     "foreign_cores_at_min": 0.19,
+     "phases_min": {
+      "copy": 4.966,
+      "index_a": 1.033,
+      "index_b": 1.365,
+      "index": 2.405,
+      "analyze": 0.326
+     },
+     "wal_mb": 508.9,
+     "heap_mb": 490.2,
+     "index_mb": 294.2,
+     "runs": [
+      {
+       "total_s": 8.432,
+       "phases": {
+        "copy": 5.478,
+        "index_a": 1.159,
+        "index_b": 1.404,
+        "index": 2.572,
+        "analyze": 0.369
+       },
+       "client_cpu_s": 1.64,
+       "server_cpu_s": 8.56,
+       "foreign_cores": 0.18,
+       "wal_mb": 508.9,
+       "heap_mb": 490.2,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 7.806,
+       "phases": {
+        "copy": 5.061,
+        "index_a": 1.033,
+        "index_b": 1.365,
+        "index": 2.405,
+        "analyze": 0.326
+       },
+       "client_cpu_s": 1.64,
+       "server_cpu_s": 8.51,
+       "foreign_cores": 0.15,
+       "wal_mb": 508.9,
+       "heap_mb": 490.2,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 7.801,
+       "phases": {
+        "copy": 4.966,
+        "index_a": 1.036,
+        "index_b": 1.43,
+        "index": 2.473,
+        "analyze": 0.345
+       },
+       "client_cpu_s": 1.62,
+       "server_cpu_s": 8.38,
+       "foreign_cores": 0.19,
+       "wal_mb": 508.9,
+       "heap_mb": 490.2,
+       "index_mb": 294.2,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv_ref",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "+ C collation only",
+     "min_s": 6.638,
+     "median_s": 6.783,
+     "client_cpu_s": 1.54,
+     "server_cpu_s": 6.79,
+     "foreign_cores_at_min": 0.16,
+     "phases_min": {
+      "copy": 4.819,
+      "index_a": 0.783,
+      "index_b": 0.743,
+      "index": 1.536,
+      "analyze": 0.271
+     },
+     "wal_mb": 508.9,
+     "heap_mb": 490.2,
+     "index_mb": 294.2,
+     "runs": [
+      {
+       "total_s": 6.638,
+       "phases": {
+        "copy": 4.819,
+        "index_a": 0.783,
+        "index_b": 0.743,
+        "index": 1.536,
+        "analyze": 0.271
+       },
+       "client_cpu_s": 1.53,
+       "server_cpu_s": 6.54,
+       "foreign_cores": 0.16,
+       "wal_mb": 508.9,
+       "heap_mb": 490.2,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 7.033,
+       "phases": {
+        "copy": 5.016,
+        "index_a": 0.825,
+        "index_b": 0.839,
+        "index": 1.671,
+        "analyze": 0.327
+       },
+       "client_cpu_s": 1.54,
+       "server_cpu_s": 6.79,
+       "foreign_cores": 0.18,
+       "wal_mb": 508.9,
+       "heap_mb": 490.2,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 6.783,
+       "phases": {
+        "copy": 4.887,
+        "index_a": 0.819,
+        "index_b": 0.782,
+        "index": 1.609,
+        "analyze": 0.272
+       },
+       "client_cpu_s": 1.54,
+       "server_cpu_s": 6.84,
+       "foreign_cores": 0.15,
+       "wal_mb": 508.9,
+       "heap_mb": 490.2,
+       "index_mb": 294.2,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv_ref",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": true,
+     "conf": {}
+    },
+    {
+     "variant": "+ 4 COPY streams only",
+     "min_s": 5.027,
+     "median_s": 5.121,
+     "client_cpu_s": 1.64,
+     "server_cpu_s": 9.32,
+     "foreign_cores_at_min": 0.11,
+     "phases_min": {
+      "copy": 2.294,
+      "index_a": 0.874,
+      "index_b": 1.431,
+      "index": 2.382,
+      "analyze": 0.34
+     },
+     "wal_mb": 508.9,
+     "heap_mb": 490.1,
+     "index_mb": 294.2,
+     "runs": [
+      {
+       "total_s": 5.027,
+       "phases": {
+        "copy": 2.294,
+        "index_a": 0.923,
+        "index_b": 1.453,
+        "index": 2.382,
+        "analyze": 0.34
+       },
+       "client_cpu_s": 1.63,
+       "server_cpu_s": 9.32,
+       "foreign_cores": 0.11,
+       "wal_mb": 508.9,
+       "heap_mb": 490.1,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 5.186,
+       "phases": {
+        "copy": 2.365,
+        "index_a": 0.874,
+        "index_b": 1.575,
+        "index": 2.457,
+        "analyze": 0.354
+       },
+       "client_cpu_s": 1.64,
+       "server_cpu_s": 9.07,
+       "foreign_cores": 0.18,
+       "wal_mb": 508.9,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 5.121,
+       "phases": {
+        "copy": 2.327,
+        "index_a": 0.951,
+        "index_b": 1.431,
+        "index": 2.388,
+        "analyze": 0.396
+       },
+       "client_cpu_s": 1.77,
+       "server_cpu_s": 9.43,
+       "foreign_cores": 0.13,
+       "wal_mb": 508.9,
+       "heap_mb": 490.0,
+       "index_mb": 294.2,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 4,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "+ concurrent index builds only",
+     "min_s": 6.698,
+     "median_s": 6.708,
+     "client_cpu_s": 1.6,
+     "server_cpu_s": 7.94,
+     "foreign_cores_at_min": 0.14,
+     "phases_min": {
+      "copy": 4.743,
+      "index_a": 1.11,
+      "index_b": 1.441,
+      "index": 1.445,
+      "analyze": 0.381
+     },
+     "wal_mb": 508.9,
+     "heap_mb": 490.2,
+     "index_mb": 294.2,
+     "runs": [
+      {
+       "total_s": 6.698,
+       "phases": {
+        "copy": 4.743,
+        "index_a": 1.221,
+        "index_b": 1.555,
+        "index": 1.56,
+        "analyze": 0.381
+       },
+       "client_cpu_s": 1.5,
+       "server_cpu_s": 7.94,
+       "foreign_cores": 0.14,
+       "wal_mb": 508.9,
+       "heap_mb": 490.2,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 7.181,
+       "phases": {
+        "copy": 4.938,
+        "index_a": 1.376,
+        "index_b": 1.822,
+        "index": 1.831,
+        "analyze": 0.394
+       },
+       "client_cpu_s": 1.6,
+       "server_cpu_s": 8.67,
+       "foreign_cores": 0.15,
+       "wal_mb": 508.9,
+       "heap_mb": 490.2,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 6.708,
+       "phases": {
+        "copy": 4.856,
+        "index_a": 1.11,
+        "index_b": 1.441,
+        "index": 1.445,
+        "analyze": 0.39
+       },
+       "client_cpu_s": 1.67,
+       "server_cpu_s": 7.8,
+       "foreign_cores": 0.15,
+       "wal_mb": 508.9,
+       "heap_mb": 490.2,
+       "index_mb": 294.2,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv_ref",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": 1,
+      "index_concurrent": true,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "pg_parallel_swap (all of the above)",
+     "min_s": 3.628,
+     "median_s": 3.633,
+     "client_cpu_s": 1.73,
+     "server_cpu_s": 7.91,
+     "foreign_cores_at_min": 0.08,
+     "phases_min": {
+      "copy": 2.287,
+      "index_a": 0.904,
+      "index_b": 0.964,
+      "index": 0.969,
+      "analyze": 0.283
+     },
+     "wal_mb": 508.9,
+     "heap_mb": 490.3,
+     "index_mb": 294.2,
+     "runs": [
+      {
+       "total_s": 3.628,
+       "phases": {
+        "copy": 2.287,
+        "index_a": 1.003,
+        "index_b": 1.044,
+        "index": 1.048,
+        "analyze": 0.283
+       },
+       "client_cpu_s": 1.6,
+       "server_cpu_s": 7.91,
+       "foreign_cores": 0.08,
+       "wal_mb": 508.9,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 3.906,
+       "phases": {
+        "copy": 2.379,
+        "index_b": 1.114,
+        "index_a": 1.134,
+        "index": 1.139,
+        "analyze": 0.379
+       },
+       "client_cpu_s": 1.81,
+       "server_cpu_s": 8.38,
+       "foreign_cores": 0.11,
+       "wal_mb": 508.9,
+       "heap_mb": 490.2,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 3.633,
+       "phases": {
+        "copy": 2.35,
+        "index_a": 0.904,
+        "index_b": 0.964,
+        "index": 0.969,
+        "analyze": 0.304
+       },
+       "client_cpu_s": 1.73,
+       "server_cpu_s": 7.53,
+       "foreign_cores": 0.14,
+       "wal_mb": 508.9,
+       "heap_mb": 490.1,
+       "index_mb": 294.2,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 4,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": true,
+      "maintenance_work_mem": "1GB",
+      "index_workers": 1,
+      "index_concurrent": true,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": true,
+     "conf": {}
+    },
+    {
+     "variant": "pg_parallel_swap, default collation",
+     "min_s": 4.228,
+     "median_s": 4.316,
+     "client_cpu_s": 1.73,
+     "server_cpu_s": 9.57,
+     "foreign_cores_at_min": 0.15,
+     "phases_min": {
+      "copy": 2.28,
+      "index_a": 1.137,
+      "index_b": 1.52,
+      "index": 1.525,
+      "analyze": 0.355
+     },
+     "wal_mb": 508.9,
+     "heap_mb": 490.1,
+     "index_mb": 294.2,
+     "runs": [
+      {
+       "total_s": 4.316,
+       "phases": {
+        "copy": 2.286,
+        "index_a": 1.15,
+        "index_b": 1.655,
+        "index": 1.661,
+        "analyze": 0.355
+       },
+       "client_cpu_s": 1.66,
+       "server_cpu_s": 9.57,
+       "foreign_cores": 0.1,
+       "wal_mb": 508.9,
+       "heap_mb": 490.1,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 4.765,
+       "phases": {
+        "copy": 2.536,
+        "index_a": 1.137,
+        "index_b": 1.771,
+        "index": 1.776,
+        "analyze": 0.439
+       },
+       "client_cpu_s": 1.85,
+       "server_cpu_s": 9.78,
+       "foreign_cores": 0.15,
+       "wal_mb": 508.9,
+       "heap_mb": 490.1,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 4.228,
+       "phases": {
+        "copy": 2.28,
+        "index_a": 1.152,
+        "index_b": 1.52,
+        "index": 1.525,
+        "analyze": 0.411
+       },
+       "client_cpu_s": 1.73,
+       "server_cpu_s": 8.84,
+       "foreign_cores": 0.15,
+       "wal_mb": 508.9,
+       "heap_mb": 490.5,
+       "index_mb": 294.2,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 4,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": true,
+      "maintenance_work_mem": "1GB",
+      "index_workers": 1,
+      "index_concurrent": true,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "pg_unlogged_swap",
+     "min_s": 2.675,
+     "median_s": 2.833,
+     "client_cpu_s": 1.7,
+     "server_cpu_s": 7.02,
+     "foreign_cores_at_min": 0.14,
+     "phases_min": {
+      "copy": 1.522,
+      "index_b": 0.788,
+      "index_a": 0.838,
+      "index": 0.841,
+      "analyze": 0.241
+     },
+     "wal_mb": 0.1,
+     "heap_mb": 490.4,
+     "index_mb": 294.3,
+     "runs": [
+      {
+       "total_s": 2.675,
+       "phases": {
+        "copy": 1.522,
+        "index_b": 0.788,
+        "index_a": 0.857,
+        "index": 0.861,
+        "analyze": 0.276
+       },
+       "client_cpu_s": 1.62,
+       "server_cpu_s": 6.44,
+       "foreign_cores": 0.14,
+       "wal_mb": 0.1,
+       "heap_mb": 490.4,
+       "index_mb": 294.3,
+       "rows": 1000000
+      },
+      {
+       "total_s": 3.138,
+       "phases": {
+        "copy": 1.818,
+        "index_b": 0.999,
+        "index_a": 1.019,
+        "index": 1.024,
+        "analyze": 0.282
+       },
+       "client_cpu_s": 1.8,
+       "server_cpu_s": 7.92,
+       "foreign_cores": 0.1,
+       "wal_mb": 0.1,
+       "heap_mb": 490.3,
+       "index_mb": 294.3,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.833,
+       "phases": {
+        "copy": 1.741,
+        "index_b": 0.827,
+        "index_a": 0.838,
+        "index": 0.841,
+        "analyze": 0.241
+       },
+       "client_cpu_s": 1.7,
+       "server_cpu_s": 7.02,
+       "foreign_cores": 0.12,
+       "wal_mb": 0.1,
+       "heap_mb": 490.3,
+       "index_mb": 294.3,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 4,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": true,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": true,
+      "maintenance_work_mem": "1GB",
+      "index_workers": 1,
+      "index_concurrent": true,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": true,
+     "conf": {}
+    },
+    {
+     "variant": "pg_unlogged_setlogged",
+     "min_s": 6.796,
+     "median_s": 7.347,
+     "client_cpu_s": 1.59,
+     "server_cpu_s": 10.98,
+     "foreign_cores_at_min": 0.17,
+     "phases_min": {
+      "copy": 1.442,
+      "index_a": 0.886,
+      "index_b": 0.855,
+      "index": 0.907,
+      "analyze": 0.276,
+      "set_logged": 4.0
+     },
+     "wal_mb": 553.1,
+     "heap_mb": 490.0,
+     "index_mb": 294.2,
+     "runs": [
+      {
+       "total_s": 7.347,
+       "phases": {
+        "copy": 1.442,
+        "index_a": 0.946,
+        "index_b": 0.973,
+        "index": 0.978,
+        "analyze": 0.324,
+        "set_logged": 4.589
+       },
+       "client_cpu_s": 1.48,
+       "server_cpu_s": 10.98,
+       "foreign_cores": 0.18,
+       "wal_mb": 553.1,
+       "heap_mb": 490.0,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 8.137,
+       "phases": {
+        "copy": 1.769,
+        "index_b": 0.855,
+        "index_a": 0.939,
+        "index": 0.944,
+        "analyze": 0.276,
+        "set_logged": 5.13
+       },
+       "client_cpu_s": 1.79,
+       "server_cpu_s": 12.29,
+       "foreign_cores": 0.11,
+       "wal_mb": 553.1,
+       "heap_mb": 490.0,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 6.796,
+       "phases": {
+        "copy": 1.585,
+        "index_a": 0.886,
+        "index_b": 0.901,
+        "index": 0.907,
+        "analyze": 0.292,
+        "set_logged": 4.0
+       },
+       "client_cpu_s": 1.59,
+       "server_cpu_s": 10.72,
+       "foreign_cores": 0.17,
+       "wal_mb": 553.1,
+       "heap_mb": 490.0,
+       "index_mb": 294.2,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 4,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": true,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": true,
+      "maintenance_work_mem": "1GB",
+      "index_workers": 1,
+      "index_concurrent": true,
+      "index_fillfactor": null,
+      "set_logged": true
+     },
+     "collate_c": true,
+     "conf": {}
+    }
+   ]
+  },
+  "streams": {
+   "mode": "copy",
+   "variants": [
+    {
+     "variant": "csv x1 streams",
+     "min_s": 4.908,
+     "median_s": 4.989,
+     "client_cpu_s": 1.46,
+     "server_cpu_s": 3.52,
+     "foreign_cores_at_min": 0.12,
+     "phases_min": {},
+     "wal_mb": 460.6,
+     "heap_mb": 490.2,
+     "index_mb": 0.0,
+     "runs": [
+      {
+       "total_s": 5.015,
+       "phases": {},
+       "client_cpu_s": 1.41,
+       "server_cpu_s": 3.47,
+       "foreign_cores": 0.15,
+       "wal_mb": 460.6,
+       "heap_mb": 490.2,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 4.908,
+       "phases": {},
+       "client_cpu_s": 1.46,
+       "server_cpu_s": 3.52,
+       "foreign_cores": 0.12,
+       "wal_mb": 460.6,
+       "heap_mb": 490.2,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 4.989,
+       "phases": {},
+       "client_cpu_s": 1.53,
+       "server_cpu_s": 3.56,
+       "foreign_cores": 0.15,
+       "wal_mb": 460.6,
+       "heap_mb": 490.2,
+       "index_mb": 0.0,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "csv x2 streams",
+     "min_s": 2.879,
+     "median_s": 2.987,
+     "client_cpu_s": 1.63,
+     "server_cpu_s": 3.9,
+     "foreign_cores_at_min": 0.29,
+     "phases_min": {},
+     "wal_mb": 460.6,
+     "heap_mb": 490.3,
+     "index_mb": 0.0,
+     "runs": [
+      {
+       "total_s": 3.0,
+       "phases": {},
+       "client_cpu_s": 1.71,
+       "server_cpu_s": 3.93,
+       "foreign_cores": 0.3,
+       "wal_mb": 460.6,
+       "heap_mb": 490.3,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.987,
+       "phases": {},
+       "client_cpu_s": 1.53,
+       "server_cpu_s": 3.9,
+       "foreign_cores": 0.33,
+       "wal_mb": 460.6,
+       "heap_mb": 490.5,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.879,
+       "phases": {},
+       "client_cpu_s": 1.63,
+       "server_cpu_s": 3.72,
+       "foreign_cores": 0.29,
+       "wal_mb": 460.6,
+       "heap_mb": 490.3,
+       "index_mb": 0.0,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 2,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "csv x3 streams",
+     "min_s": 2.374,
+     "median_s": 2.603,
+     "client_cpu_s": 1.62,
+     "server_cpu_s": 4.66,
+     "foreign_cores_at_min": 0.24,
+     "phases_min": {},
+     "wal_mb": 460.6,
+     "heap_mb": 490.3,
+     "index_mb": 0.0,
+     "runs": [
+      {
+       "total_s": 2.637,
+       "phases": {},
+       "client_cpu_s": 1.62,
+       "server_cpu_s": 4.66,
+       "foreign_cores": 0.25,
+       "wal_mb": 460.6,
+       "heap_mb": 490.3,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.603,
+       "phases": {},
+       "client_cpu_s": 1.8,
+       "server_cpu_s": 4.72,
+       "foreign_cores": 0.22,
+       "wal_mb": 460.6,
+       "heap_mb": 490.3,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.374,
+       "phases": {},
+       "client_cpu_s": 1.61,
+       "server_cpu_s": 4.24,
+       "foreign_cores": 0.24,
+       "wal_mb": 460.6,
+       "heap_mb": 490.4,
+       "index_mb": 0.0,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 3,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "csv x4 streams",
+     "min_s": 2.191,
+     "median_s": 2.308,
+     "client_cpu_s": 1.62,
+     "server_cpu_s": 4.48,
+     "foreign_cores_at_min": 0.19,
+     "phases_min": {},
+     "wal_mb": 460.6,
+     "heap_mb": 490.1,
+     "index_mb": 0.0,
+     "runs": [
+      {
+       "total_s": 2.191,
+       "phases": {},
+       "client_cpu_s": 1.46,
+       "server_cpu_s": 4.09,
+       "foreign_cores": 0.19,
+       "wal_mb": 460.6,
+       "heap_mb": 490.1,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.308,
+       "phases": {},
+       "client_cpu_s": 1.63,
+       "server_cpu_s": 4.64,
+       "foreign_cores": 0.08,
+       "wal_mb": 460.6,
+       "heap_mb": 490.2,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.335,
+       "phases": {},
+       "client_cpu_s": 1.62,
+       "server_cpu_s": 4.48,
+       "foreign_cores": 0.16,
+       "wal_mb": 460.6,
+       "heap_mb": 490.0,
+       "index_mb": 0.0,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 4,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "csv x6 streams",
+     "min_s": 2.512,
+     "median_s": 2.521,
+     "client_cpu_s": 1.75,
+     "server_cpu_s": 4.66,
+     "foreign_cores_at_min": 0.12,
+     "phases_min": {},
+     "wal_mb": 460.6,
+     "heap_mb": 490.1,
+     "index_mb": 0.0,
+     "runs": [
+      {
+       "total_s": 2.521,
+       "phases": {},
+       "client_cpu_s": 1.66,
+       "server_cpu_s": 4.66,
+       "foreign_cores": 0.04,
+       "wal_mb": 460.6,
+       "heap_mb": 490.1,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.601,
+       "phases": {},
+       "client_cpu_s": 1.98,
+       "server_cpu_s": 4.91,
+       "foreign_cores": 0.13,
+       "wal_mb": 460.6,
+       "heap_mb": 490.1,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.512,
+       "phases": {},
+       "client_cpu_s": 1.75,
+       "server_cpu_s": 4.62,
+       "foreign_cores": 0.12,
+       "wal_mb": 460.6,
+       "heap_mb": 490.1,
+       "index_mb": 0.0,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 6,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "csv x8 streams",
+     "min_s": 2.38,
+     "median_s": 2.413,
+     "client_cpu_s": 1.66,
+     "server_cpu_s": 4.45,
+     "foreign_cores_at_min": 0.18,
+     "phases_min": {},
+     "wal_mb": 460.6,
+     "heap_mb": 490.0,
+     "index_mb": 0.0,
+     "runs": [
+      {
+       "total_s": 2.413,
+       "phases": {},
+       "client_cpu_s": 1.66,
+       "server_cpu_s": 4.45,
+       "foreign_cores": 0.21,
+       "wal_mb": 460.6,
+       "heap_mb": 490.0,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.38,
+       "phases": {},
+       "client_cpu_s": 1.55,
+       "server_cpu_s": 4.42,
+       "foreign_cores": 0.18,
+       "wal_mb": 460.6,
+       "heap_mb": 490.1,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.603,
+       "phases": {},
+       "client_cpu_s": 2.03,
+       "server_cpu_s": 4.75,
+       "foreign_cores": 0.11,
+       "wal_mb": 460.6,
+       "heap_mb": 490.0,
+       "index_mb": 0.0,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 8,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    }
+   ]
+  },
+  "encoders": {
+   "mode": "copy",
+   "variants": [
+    {
+     "variant": "x1 pyarrow CSV (reference copy_parquet)",
+     "min_s": 4.679,
+     "median_s": 4.712,
+     "client_cpu_s": 1.64,
+     "server_cpu_s": 3.41,
+     "foreign_cores_at_min": 0.19,
+     "phases_min": {},
+     "wal_mb": 460.6,
+     "heap_mb": 490.2,
+     "index_mb": 0.0,
+     "runs": [
+      {
+       "total_s": 4.712,
+       "phases": {},
+       "client_cpu_s": 1.64,
+       "server_cpu_s": 3.41,
+       "foreign_cores": 0.13,
+       "wal_mb": 460.6,
+       "heap_mb": 490.2,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 4.883,
+       "phases": {},
+       "client_cpu_s": 1.68,
+       "server_cpu_s": 3.53,
+       "foreign_cores": 0.2,
+       "wal_mb": 460.6,
+       "heap_mb": 490.2,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 4.679,
+       "phases": {},
+       "client_cpu_s": 1.57,
+       "server_cpu_s": 3.41,
+       "foreign_cores": 0.19,
+       "wal_mb": 460.6,
+       "heap_mb": 490.2,
+       "index_mb": 0.0,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv_ref",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "x1 pyarrow CSV (no-GIL sink)",
+     "min_s": 4.755,
+     "median_s": 4.87,
+     "client_cpu_s": 1.41,
+     "server_cpu_s": 3.43,
+     "foreign_cores_at_min": 0.16,
+     "phases_min": {},
+     "wal_mb": 460.6,
+     "heap_mb": 490.2,
+     "index_mb": 0.0,
+     "runs": [
+      {
+       "total_s": 4.993,
+       "phases": {},
+       "client_cpu_s": 1.45,
+       "server_cpu_s": 3.54,
+       "foreign_cores": 0.16,
+       "wal_mb": 460.6,
+       "heap_mb": 490.2,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 4.87,
+       "phases": {},
+       "client_cpu_s": 1.41,
+       "server_cpu_s": 3.43,
+       "foreign_cores": 0.16,
+       "wal_mb": 460.6,
+       "heap_mb": 490.2,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 4.755,
+       "phases": {},
+       "client_cpu_s": 1.38,
+       "server_cpu_s": 3.4,
+       "foreign_cores": 0.16,
+       "wal_mb": 460.6,
+       "heap_mb": 490.2,
+       "index_mb": 0.0,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "x1 psycopg binary write_row",
+     "min_s": 3.282,
+     "median_s": 3.412,
+     "client_cpu_s": 1.96,
+     "server_cpu_s": 1.69,
+     "foreign_cores_at_min": 0.16,
+     "phases_min": {},
+     "wal_mb": 460.2,
+     "heap_mb": 490.1,
+     "index_mb": 0.0,
+     "runs": [
+      {
+       "total_s": 3.412,
+       "phases": {},
+       "client_cpu_s": 1.96,
+       "server_cpu_s": 1.69,
+       "foreign_cores": 0.2,
+       "wal_mb": 460.2,
+       "heap_mb": 490.1,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 3.53,
+       "phases": {},
+       "client_cpu_s": 2.06,
+       "server_cpu_s": 1.7,
+       "foreign_cores": 0.19,
+       "wal_mb": 460.2,
+       "heap_mb": 490.1,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 3.282,
+       "phases": {},
+       "client_cpu_s": 1.9,
+       "server_cpu_s": 1.59,
+       "foreign_cores": 0.16,
+       "wal_mb": 460.2,
+       "heap_mb": 490.1,
+       "index_mb": 0.0,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "pgbinary",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "x1 ADBC adbc_ingest (binary)",
+     "min_s": 2.71,
+     "median_s": 2.742,
+     "client_cpu_s": 1.44,
+     "server_cpu_s": 1.55,
+     "foreign_cores_at_min": 0.11,
+     "phases_min": {},
+     "wal_mb": 460.2,
+     "heap_mb": 490.1,
+     "index_mb": 0.0,
+     "runs": [
+      {
+       "total_s": 3.636,
+       "phases": {},
+       "client_cpu_s": 1.66,
+       "server_cpu_s": 1.59,
+       "foreign_cores": 0.15,
+       "wal_mb": 460.2,
+       "heap_mb": 490.1,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.742,
+       "phases": {},
+       "client_cpu_s": 1.41,
+       "server_cpu_s": 1.55,
+       "foreign_cores": 0.17,
+       "wal_mb": 460.2,
+       "heap_mb": 490.1,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.71,
+       "phases": {},
+       "client_cpu_s": 1.44,
+       "server_cpu_s": 1.49,
+       "foreign_cores": 0.11,
+       "wal_mb": 460.2,
+       "heap_mb": 490.1,
+       "index_mb": 0.0,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "adbc",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "x4 pyarrow CSV",
+     "min_s": 2.272,
+     "median_s": 2.279,
+     "client_cpu_s": 1.63,
+     "server_cpu_s": 4.47,
+     "foreign_cores_at_min": 0.03,
+     "phases_min": {},
+     "wal_mb": 460.6,
+     "heap_mb": 490.1,
+     "index_mb": 0.0,
+     "runs": [
+      {
+       "total_s": 2.314,
+       "phases": {},
+       "client_cpu_s": 1.63,
+       "server_cpu_s": 4.42,
+       "foreign_cores": 0.16,
+       "wal_mb": 460.6,
+       "heap_mb": 490.1,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.272,
+       "phases": {},
+       "client_cpu_s": 1.6,
+       "server_cpu_s": 4.52,
+       "foreign_cores": 0.03,
+       "wal_mb": 460.6,
+       "heap_mb": 490.5,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.279,
+       "phases": {},
+       "client_cpu_s": 1.7,
+       "server_cpu_s": 4.47,
+       "foreign_cores": 0.08,
+       "wal_mb": 460.6,
+       "heap_mb": 490.2,
+       "index_mb": 0.0,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 4,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "x4 psycopg binary write_row",
+     "min_s": 1.978,
+     "median_s": 2.024,
+     "client_cpu_s": 2.13,
+     "server_cpu_s": 1.98,
+     "foreign_cores_at_min": 0.16,
+     "phases_min": {},
+     "wal_mb": 460.2,
+     "heap_mb": 490.5,
+     "index_mb": 0.0,
+     "runs": [
+      {
+       "total_s": 2.024,
+       "phases": {},
+       "client_cpu_s": 2.11,
+       "server_cpu_s": 1.95,
+       "foreign_cores": 0.14,
+       "wal_mb": 460.2,
+       "heap_mb": 490.5,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.047,
+       "phases": {},
+       "client_cpu_s": 2.13,
+       "server_cpu_s": 2.05,
+       "foreign_cores": 0.26,
+       "wal_mb": 460.2,
+       "heap_mb": 490.5,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.978,
+       "phases": {},
+       "client_cpu_s": 2.25,
+       "server_cpu_s": 1.98,
+       "foreign_cores": 0.16,
+       "wal_mb": 460.2,
+       "heap_mb": 490.6,
+       "index_mb": 0.0,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 4,
+      "encoder": "pgbinary",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "x4 psycopg binary write_row, processes",
+     "min_s": 2.095,
+     "median_s": 2.106,
+     "client_cpu_s": 3.71,
+     "server_cpu_s": 1.96,
+     "foreign_cores_at_min": 0.11,
+     "phases_min": {},
+     "wal_mb": 460.2,
+     "heap_mb": 490.1,
+     "index_mb": 0.0,
+     "runs": [
+      {
+       "total_s": 2.106,
+       "phases": {},
+       "client_cpu_s": 3.8,
+       "server_cpu_s": 1.9,
+       "foreign_cores": 0.14,
+       "wal_mb": 460.2,
+       "heap_mb": 490.1,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.126,
+       "phases": {},
+       "client_cpu_s": 3.68,
+       "server_cpu_s": 2.05,
+       "foreign_cores": 0.13,
+       "wal_mb": 460.2,
+       "heap_mb": 490.3,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.095,
+       "phases": {},
+       "client_cpu_s": 3.71,
+       "server_cpu_s": 1.96,
+       "foreign_cores": 0.11,
+       "wal_mb": 460.2,
+       "heap_mb": 490.1,
+       "index_mb": 0.0,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 4,
+      "encoder": "pgbinary",
+      "workers": "processes",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "x4 ADBC adbc_ingest (binary)",
+     "min_s": 1.653,
+     "median_s": 1.81,
+     "client_cpu_s": 2.02,
+     "server_cpu_s": 2.26,
+     "foreign_cores_at_min": 0.09,
+     "phases_min": {},
+     "wal_mb": 460.2,
+     "heap_mb": 490.2,
+     "index_mb": 0.0,
+     "runs": [
+      {
+       "total_s": 1.819,
+       "phases": {},
+       "client_cpu_s": 2.13,
+       "server_cpu_s": 2.44,
+       "foreign_cores": 0.08,
+       "wal_mb": 460.2,
+       "heap_mb": 490.2,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.653,
+       "phases": {},
+       "client_cpu_s": 1.69,
+       "server_cpu_s": 2.22,
+       "foreign_cores": 0.09,
+       "wal_mb": 460.2,
+       "heap_mb": 490.3,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.81,
+       "phases": {},
+       "client_cpu_s": 2.02,
+       "server_cpu_s": 2.26,
+       "foreign_cores": 0.12,
+       "wal_mb": 460.2,
+       "heap_mb": 490.1,
+       "index_mb": 0.0,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 4,
+      "encoder": "adbc",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    }
+   ]
+  },
+  "index": {
+   "mode": "index",
+   "variants": [
+    {
+     "variant": "serial, 2 workers each (server default)",
+     "min_s": 2.248,
+     "median_s": 2.323,
+     "client_cpu_s": 0.0,
+     "server_cpu_s": 4.26,
+     "foreign_cores_at_min": 0.13,
+     "phases_min": {
+      "index_a": 0.89,
+      "index_b": 1.345
+     },
+     "wal_mb": 48.2,
+     "heap_mb": 490.3,
+     "index_mb": 294.2,
+     "runs": [
+      {
+       "total_s": 2.348,
+       "phases": {
+        "index_a": 0.934,
+        "index_b": 1.408
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 4.41,
+       "foreign_cores": 0.12,
+       "wal_mb": 48.2,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.248,
+       "phases": {
+        "index_a": 0.89,
+        "index_b": 1.345
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 4.17,
+       "foreign_cores": 0.13,
+       "wal_mb": 48.2,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.323,
+       "phases": {
+        "index_a": 0.921,
+        "index_b": 1.395
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 4.26,
+       "foreign_cores": 0.13,
+       "wal_mb": 48.2,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "serial, 0 workers",
+     "min_s": 3.255,
+     "median_s": 3.411,
+     "client_cpu_s": 0.0,
+     "server_cpu_s": 3.15,
+     "foreign_cores_at_min": 0.06,
+     "phases_min": {
+      "index_a": 1.275,
+      "index_b": 1.973
+     },
+     "wal_mb": 48.2,
+     "heap_mb": 490.3,
+     "index_mb": 294.2,
+     "runs": [
+      {
+       "total_s": 3.255,
+       "phases": {
+        "index_a": 1.275,
+        "index_b": 1.973
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 3.09,
+       "foreign_cores": 0.06,
+       "wal_mb": 48.2,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 3.411,
+       "phases": {
+        "index_a": 1.356,
+        "index_b": 2.046
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 3.15,
+       "foreign_cores": 0.08,
+       "wal_mb": 48.2,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 3.474,
+       "phases": {
+        "index_a": 1.293,
+        "index_b": 2.172
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 3.17,
+       "foreign_cores": 0.1,
+       "wal_mb": 48.2,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": 0,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "serial, 1 worker each",
+     "min_s": 2.138,
+     "median_s": 2.497,
+     "client_cpu_s": 0.0,
+     "server_cpu_s": 3.78,
+     "foreign_cores_at_min": 0.11,
+     "phases_min": {
+      "index_a": 0.924,
+      "index_b": 1.205
+     },
+     "wal_mb": 48.2,
+     "heap_mb": 490.3,
+     "index_mb": 294.2,
+     "runs": [
+      {
+       "total_s": 2.138,
+       "phases": {
+        "index_a": 0.924,
+        "index_b": 1.205
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 3.35,
+       "foreign_cores": 0.11,
+       "wal_mb": 48.2,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.611,
+       "phases": {
+        "index_a": 1.046,
+        "index_b": 1.556
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 4.02,
+       "foreign_cores": 0.14,
+       "wal_mb": 48.3,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.497,
+       "phases": {
+        "index_a": 1.07,
+        "index_b": 1.42
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 3.78,
+       "foreign_cores": 0.18,
+       "wal_mb": 48.2,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": 1,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "serial, 3 workers each",
+     "min_s": 1.95,
+     "median_s": 1.952,
+     "client_cpu_s": 0.0,
+     "server_cpu_s": 4.22,
+     "foreign_cores_at_min": 0.12,
+     "phases_min": {
+      "index_a": 0.71,
+      "index_b": 1.206
+     },
+     "wal_mb": 48.2,
+     "heap_mb": 490.3,
+     "index_mb": 294.2,
+     "runs": [
+      {
+       "total_s": 2.4,
+       "phases": {
+        "index_a": 0.936,
+        "index_b": 1.453
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 4.81,
+       "foreign_cores": 0.12,
+       "wal_mb": 48.2,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.95,
+       "phases": {
+        "index_a": 0.71,
+        "index_b": 1.233
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 4.22,
+       "foreign_cores": 0.12,
+       "wal_mb": 48.2,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.952,
+       "phases": {
+        "index_a": 0.738,
+        "index_b": 1.206
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 4.09,
+       "foreign_cores": 0.12,
+       "wal_mb": 48.2,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": 3,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "concurrent A||B, 0 workers each",
+     "min_s": 1.991,
+     "median_s": 2.074,
+     "client_cpu_s": 0.0,
+     "server_cpu_s": 3.15,
+     "foreign_cores_at_min": 0.16,
+     "phases_min": {
+      "index_a": 1.3,
+      "index_b": 1.986
+     },
+     "wal_mb": 48.2,
+     "heap_mb": 490.3,
+     "index_mb": 294.2,
+     "runs": [
+      {
+       "total_s": 2.084,
+       "phases": {
+        "index_a": 1.306,
+        "index_b": 2.08
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 3.16,
+       "foreign_cores": 0.18,
+       "wal_mb": 48.2,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.074,
+       "phases": {
+        "index_a": 1.3,
+        "index_b": 2.07
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 3.09,
+       "foreign_cores": 0.17,
+       "wal_mb": 48.2,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.991,
+       "phases": {
+        "index_a": 1.367,
+        "index_b": 1.986
+       },
+       "client_cpu_s": 0.01,
+       "server_cpu_s": 3.15,
+       "foreign_cores": 0.16,
+       "wal_mb": 48.2,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": 0,
+      "index_concurrent": true,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "concurrent A||B, 1 worker each",
+     "min_s": 1.496,
+     "median_s": 1.534,
+     "client_cpu_s": 0.0,
+     "server_cpu_s": 4.08,
+     "foreign_cores_at_min": 0.14,
+     "phases_min": {
+      "index_a": 1.082,
+      "index_b": 1.491
+     },
+     "wal_mb": 48.2,
+     "heap_mb": 490.3,
+     "index_mb": 294.2,
+     "runs": [
+      {
+       "total_s": 1.496,
+       "phases": {
+        "index_a": 1.082,
+        "index_b": 1.491
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 3.99,
+       "foreign_cores": 0.14,
+       "wal_mb": 48.2,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.534,
+       "phases": {
+        "index_a": 1.136,
+        "index_b": 1.527
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 4.08,
+       "foreign_cores": 0.08,
+       "wal_mb": 48.2,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.593,
+       "phases": {
+        "index_a": 1.135,
+        "index_b": 1.589
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 4.5,
+       "foreign_cores": 0.04,
+       "wal_mb": 48.2,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": 1,
+      "index_concurrent": true,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "concurrent A||B, 2 workers each",
+     "min_s": 1.614,
+     "median_s": 1.663,
+     "client_cpu_s": 0.0,
+     "server_cpu_s": 4.0,
+     "foreign_cores_at_min": 0.13,
+     "phases_min": {
+      "index_a": 1.127,
+      "index_b": 1.603
+     },
+     "wal_mb": 48.2,
+     "heap_mb": 490.3,
+     "index_mb": 294.2,
+     "runs": [
+      {
+       "total_s": 1.766,
+       "phases": {
+        "index_a": 1.14,
+        "index_b": 1.761
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 4.17,
+       "foreign_cores": 0.12,
+       "wal_mb": 48.2,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.614,
+       "phases": {
+        "index_a": 1.127,
+        "index_b": 1.603
+       },
+       "client_cpu_s": 0.01,
+       "server_cpu_s": 4.0,
+       "foreign_cores": 0.13,
+       "wal_mb": 48.2,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.663,
+       "phases": {
+        "index_a": 1.162,
+        "index_b": 1.656
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 3.96,
+       "foreign_cores": 0.19,
+       "wal_mb": 48.2,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": 2,
+      "index_concurrent": true,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    }
+   ]
+  },
+  "index_c": {
+   "mode": "index",
+   "variants": [
+    {
+     "variant": "serial, 2 workers each (server default)",
+     "min_s": 1.462,
+     "median_s": 1.466,
+     "client_cpu_s": 0.0,
+     "server_cpu_s": 2.6,
+     "foreign_cores_at_min": 0.18,
+     "phases_min": {
+      "index_a": 0.712,
+      "index_b": 0.743
+     },
+     "wal_mb": 48.2,
+     "heap_mb": 490.0,
+     "index_mb": 294.2,
+     "runs": [
+      {
+       "total_s": 1.614,
+       "phases": {
+        "index_a": 0.809,
+        "index_b": 0.793
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.86,
+       "foreign_cores": 0.15,
+       "wal_mb": 48.2,
+       "heap_mb": 490.0,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.462,
+       "phases": {
+        "index_a": 0.712,
+        "index_b": 0.743
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.6,
+       "foreign_cores": 0.18,
+       "wal_mb": 48.2,
+       "heap_mb": 490.0,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.466,
+       "phases": {
+        "index_a": 0.713,
+        "index_b": 0.746
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.44,
+       "foreign_cores": 0.23,
+       "wal_mb": 48.2,
+       "heap_mb": 490.0,
+       "index_mb": 294.2,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": true,
+     "conf": {}
+    },
+    {
+     "variant": "serial, 0 workers",
+     "min_s": 2.18,
+     "median_s": 2.191,
+     "client_cpu_s": 0.0,
+     "server_cpu_s": 2.05,
+     "foreign_cores_at_min": 0.08,
+     "phases_min": {
+      "index_a": 1.025,
+      "index_b": 1.075
+     },
+     "wal_mb": 48.2,
+     "heap_mb": 490.0,
+     "index_mb": 294.2,
+     "runs": [
+      {
+       "total_s": 2.18,
+       "phases": {
+        "index_a": 1.095,
+        "index_b": 1.075
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.08,
+       "foreign_cores": 0.08,
+       "wal_mb": 48.2,
+       "heap_mb": 490.0,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.246,
+       "phases": {
+        "index_a": 1.09,
+        "index_b": 1.149
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.05,
+       "foreign_cores": 0.09,
+       "wal_mb": 48.2,
+       "heap_mb": 490.0,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.191,
+       "phases": {
+        "index_a": 1.025,
+        "index_b": 1.158
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.0,
+       "foreign_cores": 0.09,
+       "wal_mb": 48.2,
+       "heap_mb": 490.0,
+       "index_mb": 294.2,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": 0,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": true,
+     "conf": {}
+    },
+    {
+     "variant": "serial, 1 worker each",
+     "min_s": 1.731,
+     "median_s": 1.756,
+     "client_cpu_s": 0.0,
+     "server_cpu_s": 2.42,
+     "foreign_cores_at_min": 0.13,
+     "phases_min": {
+      "index_a": 0.784,
+      "index_b": 0.846
+     },
+     "wal_mb": 48.2,
+     "heap_mb": 490.0,
+     "index_mb": 294.2,
+     "runs": [
+      {
+       "total_s": 1.792,
+       "phases": {
+        "index_a": 0.914,
+        "index_b": 0.87
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.42,
+       "foreign_cores": 0.19,
+       "wal_mb": 48.2,
+       "heap_mb": 490.0,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.756,
+       "phases": {
+        "index_a": 0.784,
+        "index_b": 0.965
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.42,
+       "foreign_cores": 0.2,
+       "wal_mb": 48.2,
+       "heap_mb": 490.0,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.731,
+       "phases": {
+        "index_a": 0.875,
+        "index_b": 0.846
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.44,
+       "foreign_cores": 0.13,
+       "wal_mb": 48.2,
+       "heap_mb": 490.0,
+       "index_mb": 294.2,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": 1,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": true,
+     "conf": {}
+    },
+    {
+     "variant": "serial, 3 workers each",
+     "min_s": 1.332,
+     "median_s": 1.356,
+     "client_cpu_s": 0.0,
+     "server_cpu_s": 2.7,
+     "foreign_cores_at_min": 0.13,
+     "phases_min": {
+      "index_a": 0.626,
+      "index_b": 0.697
+     },
+     "wal_mb": 48.2,
+     "heap_mb": 490.0,
+     "index_mb": 294.2,
+     "runs": [
+      {
+       "total_s": 1.356,
+       "phases": {
+        "index_a": 0.631,
+        "index_b": 0.718
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.7,
+       "foreign_cores": 0.1,
+       "wal_mb": 48.2,
+       "heap_mb": 490.0,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.455,
+       "phases": {
+        "index_a": 0.677,
+        "index_b": 0.77
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.66,
+       "foreign_cores": 0.25,
+       "wal_mb": 48.2,
+       "heap_mb": 490.0,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.332,
+       "phases": {
+        "index_a": 0.626,
+        "index_b": 0.697
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.74,
+       "foreign_cores": 0.13,
+       "wal_mb": 48.2,
+       "heap_mb": 490.0,
+       "index_mb": 294.2,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": 3,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": true,
+     "conf": {}
+    },
+    {
+     "variant": "concurrent A||B, 0 workers each",
+     "min_s": 1.118,
+     "median_s": 1.153,
+     "client_cpu_s": 0.0,
+     "server_cpu_s": 2.08,
+     "foreign_cores_at_min": 0.16,
+     "phases_min": {
+      "index_a": 1.071,
+      "index_b": 1.112
+     },
+     "wal_mb": 48.2,
+     "heap_mb": 490.0,
+     "index_mb": 294.2,
+     "runs": [
+      {
+       "total_s": 1.153,
+       "phases": {
+        "index_a": 1.129,
+        "index_b": 1.149
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.08,
+       "foreign_cores": 0.18,
+       "wal_mb": 48.2,
+       "heap_mb": 490.0,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.118,
+       "phases": {
+        "index_a": 1.071,
+        "index_b": 1.112
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.01,
+       "foreign_cores": 0.16,
+       "wal_mb": 48.2,
+       "heap_mb": 490.0,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.271,
+       "phases": {
+        "index_a": 1.165,
+        "index_b": 1.265
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.18,
+       "foreign_cores": 0.19,
+       "wal_mb": 48.2,
+       "heap_mb": 490.0,
+       "index_mb": 294.2,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": 0,
+      "index_concurrent": true,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": true,
+     "conf": {}
+    },
+    {
+     "variant": "concurrent A||B, 1 worker each",
+     "min_s": 0.989,
+     "median_s": 1.053,
+     "client_cpu_s": 0.0,
+     "server_cpu_s": 3.01,
+     "foreign_cores_at_min": 0.16,
+     "phases_min": {
+      "index_a": 0.985,
+      "index_b": 0.943
+     },
+     "wal_mb": 48.2,
+     "heap_mb": 490.0,
+     "index_mb": 294.2,
+     "runs": [
+      {
+       "total_s": 1.053,
+       "phases": {
+        "index_a": 1.015,
+        "index_b": 1.049
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 3.01,
+       "foreign_cores": 0.1,
+       "wal_mb": 48.2,
+       "heap_mb": 490.0,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.099,
+       "phases": {
+        "index_a": 0.99,
+        "index_b": 1.094
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 3.03,
+       "foreign_cores": 0.11,
+       "wal_mb": 48.2,
+       "heap_mb": 490.0,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 0.989,
+       "phases": {
+        "index_b": 0.943,
+        "index_a": 0.985
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.57,
+       "foreign_cores": 0.16,
+       "wal_mb": 48.2,
+       "heap_mb": 490.0,
+       "index_mb": 294.2,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": 1,
+      "index_concurrent": true,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": true,
+     "conf": {}
+    },
+    {
+     "variant": "concurrent A||B, 2 workers each",
+     "min_s": 0.905,
+     "median_s": 1.005,
+     "client_cpu_s": 0.0,
+     "server_cpu_s": 2.75,
+     "foreign_cores_at_min": 0.2,
+     "phases_min": {
+      "index_a": 0.812,
+      "index_b": 0.899
+     },
+     "wal_mb": 48.2,
+     "heap_mb": 490.0,
+     "index_mb": 294.2,
+     "runs": [
+      {
+       "total_s": 1.005,
+       "phases": {
+        "index_a": 0.974,
+        "index_b": 0.999
+       },
+       "client_cpu_s": 0.01,
+       "server_cpu_s": 2.75,
+       "foreign_cores": 0.17,
+       "wal_mb": 48.2,
+       "heap_mb": 490.0,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 0.905,
+       "phases": {
+        "index_a": 0.812,
+        "index_b": 0.899
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.44,
+       "foreign_cores": 0.2,
+       "wal_mb": 48.2,
+       "heap_mb": 490.0,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.135,
+       "phases": {
+        "index_a": 0.943,
+        "index_b": 1.124
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.85,
+       "foreign_cores": 0.18,
+       "wal_mb": 48.2,
+       "heap_mb": 490.0,
+       "index_mb": 294.2,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": 2,
+      "index_concurrent": true,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": true,
+     "conf": {}
+    }
+   ]
+  },
+  "index_mem": {
+   "mode": "index",
+   "variants": [
+    {
+     "variant": "concurrent, 1 worker, maintenance_work_mem=32MB",
+     "min_s": 1.334,
+     "median_s": 1.474,
+     "client_cpu_s": 0.01,
+     "server_cpu_s": 2.7,
+     "foreign_cores_at_min": 0.16,
+     "phases_min": {
+      "index_a": 1.165,
+      "index_b": 1.329
+     },
+     "wal_mb": 48.2,
+     "heap_mb": 490.5,
+     "index_mb": 294.2,
+     "runs": [
+      {
+       "total_s": 1.474,
+       "phases": {
+        "index_a": 1.43,
+        "index_b": 1.469
+       },
+       "client_cpu_s": 0.01,
+       "server_cpu_s": 2.74,
+       "foreign_cores": 0.11,
+       "wal_mb": 48.2,
+       "heap_mb": 490.5,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.334,
+       "phases": {
+        "index_a": 1.165,
+        "index_b": 1.329
+       },
+       "client_cpu_s": 0.01,
+       "server_cpu_s": 2.28,
+       "foreign_cores": 0.16,
+       "wal_mb": 48.2,
+       "heap_mb": 490.1,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.53,
+       "phases": {
+        "index_a": 1.361,
+        "index_b": 1.525
+       },
+       "client_cpu_s": 0.01,
+       "server_cpu_s": 2.7,
+       "foreign_cores": 0.16,
+       "wal_mb": 48.2,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": "32MB",
+      "index_workers": 1,
+      "index_concurrent": true,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": true,
+     "conf": {}
+    },
+    {
+     "variant": "concurrent, 1 worker, maintenance_work_mem=64MB",
+     "min_s": 1.065,
+     "median_s": 1.119,
+     "client_cpu_s": 0.0,
+     "server_cpu_s": 3.24,
+     "foreign_cores_at_min": 0.22,
+     "phases_min": {
+      "index_a": 0.995,
+      "index_b": 1.06
+     },
+     "wal_mb": 48.2,
+     "heap_mb": 490.5,
+     "index_mb": 294.2,
+     "runs": [
+      {
+       "total_s": 1.209,
+       "phases": {
+        "index_a": 1.078,
+        "index_b": 1.2
+       },
+       "client_cpu_s": 0.01,
+       "server_cpu_s": 3.73,
+       "foreign_cores": 0.08,
+       "wal_mb": 48.2,
+       "heap_mb": 490.5,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.065,
+       "phases": {
+        "index_a": 0.995,
+        "index_b": 1.06
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.88,
+       "foreign_cores": 0.22,
+       "wal_mb": 48.2,
+       "heap_mb": 490.1,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.119,
+       "phases": {
+        "index_a": 1.092,
+        "index_b": 1.114
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 3.24,
+       "foreign_cores": 0.16,
+       "wal_mb": 48.2,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": "64MB",
+      "index_workers": 1,
+      "index_concurrent": true,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": true,
+     "conf": {}
+    },
+    {
+     "variant": "concurrent, 1 worker, maintenance_work_mem=256MB",
+     "min_s": 1.015,
+     "median_s": 1.037,
+     "client_cpu_s": 0.0,
+     "server_cpu_s": 2.99,
+     "foreign_cores_at_min": 0.12,
+     "phases_min": {
+      "index_a": 0.925,
+      "index_b": 1.01
+     },
+     "wal_mb": 48.2,
+     "heap_mb": 490.5,
+     "index_mb": 294.2,
+     "runs": [
+      {
+       "total_s": 1.074,
+       "phases": {
+        "index_a": 0.977,
+        "index_b": 1.069
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 3.13,
+       "foreign_cores": 0.1,
+       "wal_mb": 48.2,
+       "heap_mb": 490.5,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.015,
+       "phases": {
+        "index_a": 0.992,
+        "index_b": 1.01
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.99,
+       "foreign_cores": 0.12,
+       "wal_mb": 48.2,
+       "heap_mb": 490.1,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.037,
+       "phases": {
+        "index_a": 0.925,
+        "index_b": 1.032
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.7,
+       "foreign_cores": 0.19,
+       "wal_mb": 48.2,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": "256MB",
+      "index_workers": 1,
+      "index_concurrent": true,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": true,
+     "conf": {}
+    },
+    {
+     "variant": "concurrent, 1 worker, maintenance_work_mem=1GB",
+     "min_s": 1.02,
+     "median_s": 1.052,
+     "client_cpu_s": 0.0,
+     "server_cpu_s": 2.88,
+     "foreign_cores_at_min": 0.29,
+     "phases_min": {
+      "index_a": 0.838,
+      "index_b": 1.016
+     },
+     "wal_mb": 48.2,
+     "heap_mb": 490.5,
+     "index_mb": 294.2,
+     "runs": [
+      {
+       "total_s": 1.02,
+       "phases": {
+        "index_a": 0.838,
+        "index_b": 1.016
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.66,
+       "foreign_cores": 0.29,
+       "wal_mb": 48.2,
+       "heap_mb": 490.5,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.065,
+       "phases": {
+        "index_a": 0.941,
+        "index_b": 1.059
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 3.09,
+       "foreign_cores": 0.12,
+       "wal_mb": 48.2,
+       "heap_mb": 490.1,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.052,
+       "phases": {
+        "index_b": 1.044,
+        "index_a": 1.045
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.88,
+       "foreign_cores": 0.1,
+       "wal_mb": 48.2,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": "1GB",
+      "index_workers": 1,
+      "index_concurrent": true,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": true,
+     "conf": {}
+    },
+    {
+     "variant": "concurrent, 1 worker, maintenance_work_mem=2GB",
+     "min_s": 0.87,
+     "median_s": 1.066,
+     "client_cpu_s": 0.0,
+     "server_cpu_s": 2.99,
+     "foreign_cores_at_min": 0.25,
+     "phases_min": {
+      "index_b": 0.864,
+      "index_a": 0.865
+     },
+     "wal_mb": 48.2,
+     "heap_mb": 490.5,
+     "index_mb": 294.2,
+     "runs": [
+      {
+       "total_s": 1.066,
+       "phases": {
+        "index_b": 1.056,
+        "index_a": 1.062
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.99,
+       "foreign_cores": 0.19,
+       "wal_mb": 48.2,
+       "heap_mb": 490.5,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.179,
+       "phases": {
+        "index_a": 1.063,
+        "index_b": 1.174
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 3.27,
+       "foreign_cores": 0.12,
+       "wal_mb": 48.2,
+       "heap_mb": 490.1,
+       "index_mb": 294.2,
+       "rows": 1000000
+      },
+      {
+       "total_s": 0.87,
+       "phases": {
+        "index_b": 0.864,
+        "index_a": 0.865
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.41,
+       "foreign_cores": 0.25,
+       "wal_mb": 48.2,
+       "heap_mb": 490.3,
+       "index_mb": 294.2,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": "2GB",
+      "index_workers": 1,
+      "index_concurrent": true,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": true,
+     "conf": {}
+    },
+    {
+     "variant": "concurrent, 1 worker, 1GB, fillfactor=100",
+     "min_s": 0.977,
+     "median_s": 1.023,
+     "client_cpu_s": 0.0,
+     "server_cpu_s": 2.83,
+     "foreign_cores_at_min": 0.21,
+     "phases_min": {
+      "index_a": 0.972,
+      "index_b": 0.921
+     },
+     "wal_mb": 47.4,
+     "heap_mb": 490.5,
+     "index_mb": 269.1,
+     "runs": [
+      {
+       "total_s": 1.023,
+       "phases": {
+        "index_a": 0.982,
+        "index_b": 1.018
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.83,
+       "foreign_cores": 0.17,
+       "wal_mb": 47.4,
+       "heap_mb": 490.5,
+       "index_mb": 269.1,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.123,
+       "phases": {
+        "index_a": 1.076,
+        "index_b": 1.117
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 3.25,
+       "foreign_cores": 0.14,
+       "wal_mb": 47.4,
+       "heap_mb": 490.1,
+       "index_mb": 269.1,
+       "rows": 1000000
+      },
+      {
+       "total_s": 0.977,
+       "phases": {
+        "index_b": 0.921,
+        "index_a": 0.972
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.77,
+       "foreign_cores": 0.21,
+       "wal_mb": 47.4,
+       "heap_mb": 490.3,
+       "index_mb": 269.1,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": "1GB",
+      "index_workers": 1,
+      "index_concurrent": true,
+      "index_fillfactor": 100,
+      "set_logged": false
+     },
+     "collate_c": true,
+     "conf": {}
+    },
+    {
+     "variant": "concurrent, 1 worker, 1GB, UNLOGGED table",
+     "min_s": 0.854,
+     "median_s": 0.895,
+     "client_cpu_s": 0.0,
+     "server_cpu_s": 2.64,
+     "foreign_cores_at_min": 0.25,
+     "phases_min": {
+      "index_a": 0.794,
+      "index_b": 0.85
+     },
+     "wal_mb": 0.0,
+     "heap_mb": 490.4,
+     "index_mb": 294.3,
+     "runs": [
+      {
+       "total_s": 0.895,
+       "phases": {
+        "index_a": 0.794,
+        "index_b": 0.888
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.58,
+       "foreign_cores": 0.2,
+       "wal_mb": 0.0,
+       "heap_mb": 490.4,
+       "index_mb": 294.3,
+       "rows": 1000000
+      },
+      {
+       "total_s": 0.929,
+       "phases": {
+        "index_a": 0.87,
+        "index_b": 0.921
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.77,
+       "foreign_cores": 0.1,
+       "wal_mb": 0.0,
+       "heap_mb": 490.3,
+       "index_mb": 294.3,
+       "rows": 1000000
+      },
+      {
+       "total_s": 0.854,
+       "phases": {
+        "index_a": 0.834,
+        "index_b": 0.85
+       },
+       "client_cpu_s": 0.0,
+       "server_cpu_s": 2.64,
+       "foreign_cores": 0.25,
+       "wal_mb": 0.0,
+       "heap_mb": 490.1,
+       "index_mb": 294.3,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": true,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": "1GB",
+      "index_workers": 1,
+      "index_concurrent": true,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": true,
+     "conf": {}
+    }
+   ]
+  },
+  "session": {
+   "mode": "copy",
+   "variants": [
+    {
+     "variant": "x4 synchronous_commit=on",
+     "min_s": 2.352,
+     "median_s": 2.373,
+     "client_cpu_s": 1.68,
+     "server_cpu_s": 4.45,
+     "foreign_cores_at_min": 0.13,
+     "phases_min": {},
+     "wal_mb": 460.6,
+     "heap_mb": 490.1,
+     "index_mb": 0.0,
+     "runs": [
+      {
+       "total_s": 2.373,
+       "phases": {},
+       "client_cpu_s": 1.56,
+       "server_cpu_s": 4.39,
+       "foreign_cores": 0.16,
+       "wal_mb": 460.6,
+       "heap_mb": 490.1,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.352,
+       "phases": {},
+       "client_cpu_s": 1.69,
+       "server_cpu_s": 4.45,
+       "foreign_cores": 0.13,
+       "wal_mb": 460.6,
+       "heap_mb": 490.2,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.382,
+       "phases": {},
+       "client_cpu_s": 1.68,
+       "server_cpu_s": 4.57,
+       "foreign_cores": 0.09,
+       "wal_mb": 460.6,
+       "heap_mb": 490.2,
+       "index_mb": 0.0,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 4,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "x4 synchronous_commit=off",
+     "min_s": 2.295,
+     "median_s": 2.364,
+     "client_cpu_s": 1.76,
+     "server_cpu_s": 4.53,
+     "foreign_cores_at_min": 0.15,
+     "phases_min": {},
+     "wal_mb": 460.6,
+     "heap_mb": 490.4,
+     "index_mb": 0.0,
+     "runs": [
+      {
+       "total_s": 2.364,
+       "phases": {},
+       "client_cpu_s": 1.66,
+       "server_cpu_s": 4.7,
+       "foreign_cores": 0.11,
+       "wal_mb": 460.6,
+       "heap_mb": 490.4,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.438,
+       "phases": {},
+       "client_cpu_s": 1.83,
+       "server_cpu_s": 4.44,
+       "foreign_cores": 0.16,
+       "wal_mb": 460.6,
+       "heap_mb": 490.1,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 2.295,
+       "phases": {},
+       "client_cpu_s": 1.76,
+       "server_cpu_s": 4.53,
+       "foreign_cores": 0.15,
+       "wal_mb": 460.6,
+       "heap_mb": 490.3,
+       "index_mb": 0.0,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 4,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": true,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "x4 UNLOGGED",
+     "min_s": 1.551,
+     "median_s": 1.631,
+     "client_cpu_s": 1.61,
+     "server_cpu_s": 3.91,
+     "foreign_cores_at_min": 0.15,
+     "phases_min": {},
+     "wal_mb": 0.1,
+     "heap_mb": 490.5,
+     "index_mb": 0.0,
+     "runs": [
+      {
+       "total_s": 1.631,
+       "phases": {},
+       "client_cpu_s": 1.72,
+       "server_cpu_s": 3.91,
+       "foreign_cores": 0.14,
+       "wal_mb": 0.1,
+       "heap_mb": 490.5,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.551,
+       "phases": {},
+       "client_cpu_s": 1.57,
+       "server_cpu_s": 3.86,
+       "foreign_cores": 0.15,
+       "wal_mb": 0.1,
+       "heap_mb": 490.3,
+       "index_mb": 0.0,
+       "rows": 1000000
+      },
+      {
+       "total_s": 1.658,
+       "phases": {},
+       "client_cpu_s": 1.61,
+       "server_cpu_s": 3.99,
+       "foreign_cores": 0.05,
+       "wal_mb": 0.1,
+       "heap_mb": 490.1,
+       "index_mb": 0.0,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 4,
+      "encoder": "csv",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": true,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    }
+   ]
+  },
+  "naive": {
+   "mode": "naive",
+   "variants": [
+    {
+     "variant": "COPY x1 into indexed table (pg_truncate_copy)",
+     "min_s": 11.605,
+     "median_s": 11.693,
+     "client_cpu_s": 1.69,
+     "server_cpu_s": 9.97,
+     "foreign_cores_at_min": 0.12,
+     "phases_min": {},
+     "wal_mb": 1017.4,
+     "heap_mb": 490.2,
+     "index_mb": 412.7,
+     "runs": [
+      {
+       "total_s": 12.073,
+       "phases": {},
+       "client_cpu_s": 1.69,
+       "server_cpu_s": 10.06,
+       "foreign_cores": 0.12,
+       "wal_mb": 1017.4,
+       "heap_mb": 490.2,
+       "index_mb": 412.7,
+       "rows": 1000000
+      },
+      {
+       "total_s": 11.605,
+       "phases": {},
+       "client_cpu_s": 1.72,
+       "server_cpu_s": 9.83,
+       "foreign_cores": 0.12,
+       "wal_mb": 1017.4,
+       "heap_mb": 490.2,
+       "index_mb": 412.7,
+       "rows": 1000000
+      },
+      {
+       "total_s": 11.693,
+       "phases": {},
+       "client_cpu_s": 1.62,
+       "server_cpu_s": 9.97,
+       "foreign_cores": 0.11,
+       "wal_mb": 1017.4,
+       "heap_mb": 490.2,
+       "index_mb": 412.7,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "csv_ref",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "psycopg multi-row INSERT, 5k rows/stmt (pg_naive_insert)",
+     "min_s": 33.185,
+     "median_s": 35.085,
+     "client_cpu_s": 20.72,
+     "server_cpu_s": 10.84,
+     "foreign_cores_at_min": 0.14,
+     "phases_min": {},
+     "wal_mb": 1061.7,
+     "heap_mb": 489.5,
+     "index_mb": 412.7,
+     "runs": [
+      {
+       "total_s": 33.185,
+       "phases": {},
+       "client_cpu_s": 19.32,
+       "server_cpu_s": 10.84,
+       "foreign_cores": 0.14,
+       "wal_mb": 1061.7,
+       "heap_mb": 489.5,
+       "index_mb": 412.7,
+       "rows": 1000000
+      },
+      {
+       "total_s": 35.085,
+       "phases": {},
+       "client_cpu_s": 20.72,
+       "server_cpu_s": 10.81,
+       "foreign_cores": 0.15,
+       "wal_mb": 1061.5,
+       "heap_mb": 489.5,
+       "index_mb": 412.7,
+       "rows": 1000000
+      },
+      {
+       "total_s": 36.586,
+       "phases": {},
+       "client_cpu_s": 21.82,
+       "server_cpu_s": 11.1,
+       "foreign_cores": 0.15,
+       "wal_mb": 1061.5,
+       "heap_mb": 489.5,
+       "index_mb": 412.7,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "psycopg_multirow",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "psycopg executemany (pipeline mode), 5k rows/batch",
+     "min_s": 19.264,
+     "median_s": 20.473,
+     "client_cpu_s": 11.45,
+     "server_cpu_s": 15.39,
+     "foreign_cores_at_min": 0.17,
+     "phases_min": {},
+     "wal_mb": 1061.6,
+     "heap_mb": 489.5,
+     "index_mb": 412.7,
+     "runs": [
+      {
+       "total_s": 19.264,
+       "phases": {},
+       "client_cpu_s": 11.45,
+       "server_cpu_s": 15.39,
+       "foreign_cores": 0.17,
+       "wal_mb": 1061.6,
+       "heap_mb": 489.5,
+       "index_mb": 412.7,
+       "rows": 1000000
+      },
+      {
+       "total_s": 20.473,
+       "phases": {},
+       "client_cpu_s": 11.3,
+       "server_cpu_s": 15.15,
+       "foreign_cores": 0.17,
+       "wal_mb": 1061.5,
+       "heap_mb": 489.5,
+       "index_mb": 412.7,
+       "rows": 1000000
+      },
+      {
+       "total_s": 21.489,
+       "phases": {},
+       "client_cpu_s": 11.9,
+       "server_cpu_s": 15.88,
+       "foreign_cores": 0.19,
+       "wal_mb": 1061.6,
+       "heap_mb": 489.5,
+       "index_mb": 412.7,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "psycopg_executemany",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "pandas to_sql(method='multi', chunksize=5000)",
+     "min_s": 141.982,
+     "median_s": 144.971,
+     "client_cpu_s": 124.31,
+     "server_cpu_s": 11.18,
+     "foreign_cores_at_min": 0.08,
+     "phases_min": {},
+     "wal_mb": 1061.9,
+     "heap_mb": 489.5,
+     "index_mb": 412.7,
+     "runs": [
+      {
+       "total_s": 141.982,
+       "phases": {},
+       "client_cpu_s": 122.68,
+       "server_cpu_s": 11.05,
+       "foreign_cores": 0.08,
+       "wal_mb": 1061.9,
+       "heap_mb": 489.5,
+       "index_mb": 412.7,
+       "rows": 1000000
+      },
+      {
+       "total_s": 144.971,
+       "phases": {},
+       "client_cpu_s": 124.31,
+       "server_cpu_s": 11.18,
+       "foreign_cores": 0.09,
+       "wal_mb": 1061.5,
+       "heap_mb": 489.5,
+       "index_mb": 412.7,
+       "rows": 1000000
+      },
+      {
+       "total_s": 146.043,
+       "phases": {},
+       "client_cpu_s": 126.05,
+       "server_cpu_s": 11.25,
+       "foreign_cores": 0.08,
+       "wal_mb": 1061.6,
+       "heap_mb": 489.5,
+       "index_mb": 412.7,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "pandas_to_sql_multi",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    },
+    {
+     "variant": "pandas to_sql(chunksize=5000) (SQLAlchemy insertmanyvalues)",
+     "min_s": 23.328,
+     "median_s": 24.484,
+     "client_cpu_s": 16.74,
+     "server_cpu_s": 16.28,
+     "foreign_cores_at_min": 0.14,
+     "phases_min": {},
+     "wal_mb": 1061.5,
+     "heap_mb": 489.5,
+     "index_mb": 412.7,
+     "runs": [
+      {
+       "total_s": 23.328,
+       "phases": {},
+       "client_cpu_s": 16.74,
+       "server_cpu_s": 16.28,
+       "foreign_cores": 0.14,
+       "wal_mb": 1061.5,
+       "heap_mb": 489.5,
+       "index_mb": 412.7,
+       "rows": 1000000
+      },
+      {
+       "total_s": 24.809,
+       "phases": {},
+       "client_cpu_s": 16.82,
+       "server_cpu_s": 16.49,
+       "foreign_cores": 0.15,
+       "wal_mb": 1061.6,
+       "heap_mb": 489.5,
+       "index_mb": 412.7,
+       "rows": 1000000
+      },
+      {
+       "total_s": 24.484,
+       "phases": {},
+       "client_cpu_s": 15.56,
+       "server_cpu_s": 15.07,
+       "foreign_cores": 0.14,
+       "wal_mb": 1061.6,
+       "heap_mb": 489.5,
+       "index_mb": 412.7,
+       "rows": 1000000
+      }
+     ],
+     "opts": {
+      "streams": 1,
+      "encoder": "pandas_to_sql_default",
+      "workers": "threads",
+      "batch_rows": 50000,
+      "arrow_threads": false,
+      "unlogged": false,
+      "single_txn": false,
+      "freeze": false,
+      "sync_commit_off": false,
+      "maintenance_work_mem": null,
+      "index_workers": null,
+      "index_concurrent": false,
+      "index_fillfactor": null,
+      "set_logged": false
+     },
+     "collate_c": false,
+     "conf": {}
+    }
+   ]
+  }
+ }
+}

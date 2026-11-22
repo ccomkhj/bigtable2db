@@ -1,0 +1,284 @@
+{
+ "solution": "pg_partition_swap",
+ "engine": "postgres",
+ "strategy": "LIST-partitioned by tenant (dedicated partitions for big tenants + balanced tail buckets); refresh = parallel COPY + per-partition index builds + atomic swap; replace_tenant = rebuild one partition, DETACH/ATTACH in one transaction",
+ "atomic_swap": true,
+ "scale": "5M",
+ "rows": 5000000,
+ "reps": 1,
+ "tag": "lab_layout_hash8",
+ "started_utc": "2026-11-22T00:49:34+00:00",
+ "host": {
+  "cpus": 4,
+  "cpu_model": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "mem_gb": 15.7,
+  "kernel": "6.18.44-fc-v726",
+  "python": "3.13.18"
+ },
+ "steps": {
+  "initial_load": {
+   "total_s": 22.95,
+   "phases": {
+    "create": 0.017,
+    "copy": 15.724,
+    "analyze": 7.2,
+    "analyze_tail": 0.553,
+    "index": 7.2,
+    "index_attach": 0.003,
+    "swap": 0.002
+   },
+   "notes": {
+    "layout": {
+     "kind": "hash",
+     "partitions": 8
+    }
+   },
+   "cpu_avg_pct": 65.6,
+   "cpu_max_pct": 100.0,
+   "mem_peak_gb": 5.22,
+   "disk_peak_delta_gb": 6.32,
+   "verify": {
+    "ok": true,
+    "got": [
+     5000000,
+     2500036124.1319695,
+     1252488814.4500222,
+     4999999
+    ],
+    "want": [
+     5000000,
+     2500036124.1320095,
+     1252488814.4500453,
+     4999999
+    ]
+   }
+  },
+  "storage": {
+   "table": 2570256384,
+   "index_a": 770260992,
+   "index_b": 772358144,
+   "total": 4112875520,
+   "database": 4121196211,
+   "partitions": 8,
+   "data_dir_bytes": 6821407283
+  },
+  "queries": {
+   "point": {
+    "verified": true,
+    "n": 500,
+    "p50_ms": 0.149,
+    "p95_ms": 0.243,
+    "p99_ms": 0.409,
+    "max_ms": 6.52,
+    "mean_ms": 0.187
+   },
+   "series": {
+    "verified": true,
+    "n": 500,
+    "p50_ms": 0.285,
+    "p95_ms": 0.398,
+    "p99_ms": 0.531,
+    "max_ms": 0.593,
+    "mean_ms": 0.291
+   },
+   "tenant_agg": {
+    "verified": true,
+    "n": 40,
+    "p50_ms": 5.69,
+    "p95_ms": 21.502,
+    "p99_ms": 73.542,
+    "max_ms": 73.542,
+    "mean_ms": 9.019
+   },
+   "full_agg": {
+    "verified": true,
+    "n": 5,
+    "p50_ms": 472.107,
+    "p95_ms": 482.452,
+    "p99_ms": 482.452,
+    "max_ms": 482.452,
+    "mean_ms": 461.226
+   }
+  },
+  "incremental": {
+   "upsert_1pct": {
+    "total_s": 1.815,
+    "phases": {
+     "stage_copy": 0.216,
+     "stage_analyze": 0.21,
+     "merge": 1.338,
+     "commit": 0.047
+    },
+    "notes": {},
+    "cpu_avg_pct": 29.1,
+    "cpu_max_pct": 33.5,
+    "mem_peak_gb": 4.77,
+    "disk_peak_delta_gb": 0.07,
+    "reader": {
+     "n": 88,
+     "p50_ms": 0.547,
+     "p95_ms": 1.095,
+     "p99_ms": 4.558,
+     "max_ms": 4.558,
+     "mean_ms": 0.64,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.026,
+     "first_error": null
+    },
+    "rows": 50000,
+    "verify": {
+     "ok": true,
+     "got": [
+      5012500,
+      2506180739.1849623,
+      1255660231.4500232,
+      5012499
+     ],
+     "want": [
+      5012500,
+      2506180739.1849794,
+      1255660231.4500375,
+      5012499
+     ]
+    }
+   },
+   "upsert_10pct": {
+    "total_s": 16.089,
+    "phases": {
+     "stage_copy": 2.001,
+     "stage_analyze": 0.369,
+     "merge": 13.621,
+     "commit": 0.095
+    },
+    "notes": {},
+    "cpu_avg_pct": 27.0,
+    "cpu_max_pct": 36.6,
+    "mem_peak_gb": 5.82,
+    "disk_peak_delta_gb": 1.06,
+    "reader": {
+     "n": 772,
+     "p50_ms": 0.566,
+     "p95_ms": 0.92,
+     "p99_ms": 1.828,
+     "max_ms": 5.547,
+     "mean_ms": 0.624,
+     "errors": 0,
+     "missing_rows": 0,
+     "max_stall_s": 0.037,
+     "first_error": null
+    },
+    "rows": 500000,
+    "verify": {
+     "ok": true,
+     "got": [
+      5137500,
+      2568451675.997951,
+      1286885366.2300098,
+      5137499
+     ],
+     "want": [
+      5137500,
+      2568451675.998023,
+      1286885366.2299876,
+      5137499
+     ]
+    }
+   },
+   "replace_tenant": {
+    "total_s": 6.595,
+    "phases": {
+     "prepare": 0.003,
+     "copy_other_tenants": 2.07,
+     "copy": 3.596,
+     "index": 2.038,
+     "analyze": 0.409,
+     "swap": 0.517
+    },
+    "notes": {
+     "partition": {
+      "old": "bt_58a06396_p00",
+      "new": "bt_58a06396_p00_r9d8812",
+      "bound": "FOR VALUES WITH (modulus 8, remainder 0)",
+      "dedicated": false,
+      "attach_validation_scan_skipped": true
+     }
+    },
+    "cpu_avg_pct": 36.2,
+    "cpu_max_pct": 99.5,
+    "mem_peak_gb": 6.18,
+    "disk_peak_delta_gb": 1.25,
+    "rows": 257580,
+    "verify": {
+     "ok": true,
+     "got": [
+      5135880,
+      2567786667.1399875,
+      1286531952.030037,
+      5162499
+     ],
+     "want": [
+      5135880,
+      2567786667.1400175,
+      1286531952.0299716,
+      5162499
+     ]
+    }
+   }
+  },
+  "storage_after": {
+   "table": 2804162560,
+   "index_a": 819109888,
+   "index_b": 821264384,
+   "total": 4444536832,
+   "database": 4453045939,
+   "partitions": 8,
+   "data_dir_bytes": 8294197811
+  }
+ },
+ "ok": true,
+ "info": {
+  "image": "postgres:17",
+  "server_version": "17.12 (Debian 17.12-1.pgdg13+1)",
+  "db_collation": "en_US.utf8",
+  "text_key_collation": "en_US.utf8",
+  "conf": {
+   "shared_buffers": "4GB",
+   "effective_cache_size": "10GB",
+   "work_mem": "64MB",
+   "maintenance_work_mem": "1GB",
+   "max_wal_size": "8GB",
+   "min_wal_size": "1GB",
+   "checkpoint_timeout": "15min",
+   "checkpoint_completion_target": "0.9",
+   "wal_compression": "lz4",
+   "max_worker_processes": "8",
+   "max_parallel_workers": "4",
+   "max_parallel_workers_per_gather": "2",
+   "max_parallel_maintenance_workers": "2",
+   "random_page_cost": "1.1",
+   "effective_io_concurrency": "200",
+   "max_connections": "100",
+   "listen_addresses": "127.0.0.1"
+  },
+  "variant": {
+   "upsert": "on_conflict",
+   "stage": "temp",
+   "sort": "none",
+   "fillfactor": 100,
+   "replace": "delete_copy",
+   "load_workers": 4,
+   "plan_cache_mode": "auto",
+   "layout": "hash:8"
+  },
+  "session_settings": {
+   "load": [
+    "SET synchronous_commit = off"
+   ],
+   "maintenance": [
+    "SET work_mem = '256MB'"
+   ]
+  }
+ },
+ "wall_s": 57.5
+}

@@ -71,6 +71,24 @@ it contains the partition key; index B becomes one local index per partition.
 * The full refresh is no slower than the unpartitioned one, even with the default collation: 15 small index
   builds sort faster than one big one.
 
+### How many partitions?
+
+5M rows, same data, one load each (`results/raw/pg_partition_swap__5M__lab_layout_*.json`; the LIST row is
+the first 5M matrix run):
+
+| Layout | Partitions | Initial load | `series` p50 | Replace largest tenant |
+|---|--:|--:|--:|--:|
+| unpartitioned | 1 | 25 s | 0.11 ms | 4.5 s |
+| `HASH (tenant_id)`, 8 | 8 | 23 s | 0.29 ms | 6.6 s |
+| `LIST`: tenants ≥ 1 % dedicated + 8 tail buckets (chosen) | 15 | 24 s | 0.35 ms | **2.3 s** |
+| `HASH (tenant_id)`, 32 | 32 | 25 s | 0.58 ms | 3.0 s |
+| `HASH (tenant_id)`, 128 | 128 | 38 s | 1.88 ms | 3.0 s |
+
+The secondary-lookup penalty grows roughly linearly with the number of partitions, and at 128 partitions the
+load itself gets slower. With hash buckets, replacing one tenant means rebuilding everybody else in its bucket
+too; giving the large tenants their own partition is what makes the exchange cheap. Keep the count low and
+spend the partitions on the tenants that are big enough to matter.
+
 ## Production caveats
 
 * `ATTACH PARTITION` takes `SHARE UPDATE EXCLUSIVE` on the parent; `DETACH` (non-concurrent) and the swap of the

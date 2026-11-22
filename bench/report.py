@@ -61,6 +61,7 @@ def load(tag: str) -> list[dict]:
             "refresh_median_s": round(statistics.median(rt), 1) if rt else None,
             "refresh_min_s": min(rt) if rt else None, "refresh_max_s": max(rt) if rt else None,
             "n_refresh": len(rt),
+            "refresh_failed": any("error" in x for x in S.get("refresh", [])),
             "load_median_s": round(statistics.median(loads), 1),
             "headline_s": round(statistics.median(rt), 1) if rt else il["total_s"],
             "rows_per_s": None,
@@ -133,7 +134,9 @@ def tables_for_scale(rows: list[dict], scale: str) -> str:
     out.append(md_table(
         ["Solution", "Initial load", "Refresh over live table (median)", "min – max", "rows/s", "≤ 5 min",
          "Reader errors / missing", "Longest reader stall", "Peak extra disk"],
-        [[f"`{r['solution']}`", fmt_t(r["initial_load_s"]), "**" + fmt_t(r["refresh_median_s"]) + "**",
+        [[f"`{r['solution']}`", fmt_t(r["initial_load_s"]),
+          "**" + fmt_t(r["refresh_median_s"]) + "**" if r["n_refresh"] else
+          ("failed" if r.get("refresh_failed") else "not run"),
           f"{fmt_t(r['refresh_min_s'])} – {fmt_t(r['refresh_max_s'])}" if r["n_refresh"] > 1 else "–",
           f"{r['rows_per_s']:,}", "yes" if r["headline_s"] <= TARGET_S else "no",
           "–" if r["reader_errors"] is None else f"{r['reader_errors']} / {r['reader_missing']}",
@@ -192,8 +195,13 @@ def chart_refresh(rows: list[dict], scale: str, path: Path):
         c = FAMILY_COLOR.get(r["engine"], INK2)
         lo, hi = min(r["initial_load_s"], r["refresh_min_s"] or 1e9), max(r["initial_load_s"], r["refresh_max_s"] or 0)
         ax.plot([lo, hi], [y, y], color=c, linewidth=2, alpha=0.45, solid_capstyle="round")
-        ax.plot([r["headline_s"]], [y], "o", color=c, markersize=8, markeredgecolor=SURFACE, markeredgewidth=1.5)
-        ax.text(hi * 1.12, y, fmt_t(r["headline_s"]), va="center", ha="left", fontsize=9, color=INK)
+        measured = r["n_refresh"] > 0
+        ax.plot([r["headline_s"]], [y], "o", color=c if measured else SURFACE, markersize=8,
+                markeredgecolor=SURFACE if measured else c, markeredgewidth=1.5 if measured else 2)
+        note = "" if measured else ("  (initial load; refresh failed)" if r.get("refresh_failed")
+                                    else "  (initial load only)")
+        ax.text(hi * 1.12, y, fmt_t(r["headline_s"]) + note, va="center", ha="left", fontsize=9, color=INK,
+                bbox=dict(facecolor=SURFACE, edgecolor="none", pad=1.5))
     ax.set_yticks(ys)
     ax.set_yticklabels([r["solution"] for r in rs], fontsize=9, color=INK)
     ax.set_xscale("log")
@@ -208,7 +216,7 @@ def chart_refresh(rows: list[dict], scale: str, path: Path):
     ax.set_xticklabels([fmt_t(t).replace(" 00 s", "") for t in ticks])
     ax.minorticks_off()
     ax.set_title(f"Full refresh of the {scale}-row table until it is queryable (log scale)\n"
-                 "dot = median refresh over the live table; line = range of all loads",
+                 "dot = median refresh over the live table; line = range of all loads; hollow = initial load only",
                  fontsize=10.5, color=INK, loc="left")
     _legend(ax, {r["engine"] for r in rs}, loc="upper right")
     fig.tight_layout()
@@ -283,54 +291,27 @@ def chart_storage(rows: list[dict], scale: str, path: Path):
     plt.close(fig)
 
 
-def chart_scaling(rows: list[dict], path: Path):
-    """Seconds vs rows for every solution measured at >= 2 scales."""
-    import matplotlib
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-    by: dict[str, list[dict]] = {}
+def scaling_table(rows: list[dict]) -> str:
+    """Two scales are not enough for a curve; show the factor instead (4x the rows -> x?)."""
+    by: dict[str, dict[str, dict]] = {}
     for r in rows:
         if not r.get("failed"):
-            by.setdefault(r["solution"], []).append(r)
-    by = {k: sorted(v, key=lambda r: r["rows"]) for k, v in by.items() if len(v) >= 2}
-    if not by:
-        return
-    fig, ax = plt.subplots(figsize=(9, 5.2), dpi=200)
-    fig.patch.set_facecolor(SURFACE)
-    _style(ax)
-    ax.grid(axis="y", color=GRID, linewidth=0.8)
-    ends = []
-    for name, v in by.items():
-        c = FAMILY_COLOR.get(v[0]["engine"], INK2)
-        xs, ys = [r["rows"] / 1e6 for r in v], [r["headline_s"] for r in v]
-        ax.plot(xs, ys, "-o", color=c, linewidth=2, markersize=5, markeredgecolor=SURFACE)
-        ends.append((ys[-1], xs[-1], name))
-    # de-collide end labels on the log axis
-    ends.sort()
-    last = 0
-    for y, x, name in ends:
-        yy = max(y, last * 1.17)
-        ax.text(x * 1.04, yy, name, fontsize=8, color=INK, va="center")
-        last = yy
-    ax.set_xscale("log")
-    ax.set_yscale("log")
-    ax.axhline(TARGET_S, color=INK2, linewidth=1, linestyle=(0, (4, 3)))
-    ax.text(ax.get_xlim()[0] * 1.02, TARGET_S * 1.08, "5-minute target", fontsize=8.5, color=INK2)
-    xs_all = sorted({r["rows"] / 1e6 for v in by.values() for r in v})
-    ax.set_xticks(xs_all)
-    ax.set_xticklabels([f"{x:g}M" for x in xs_all])
-    ax.set_xlim(xs_all[0] * 0.85, xs_all[-1] * 2.4)
-    ax.minorticks_off()
-    yt = [t for t in (1, 5, 10, 30, 60, 300, 600, 1800, 3600) if ax.get_ylim()[0] <= t <= ax.get_ylim()[1]]
-    ax.set_yticks(yt)
-    ax.set_yticklabels([fmt_t(t).replace(" 00 s", "").replace(".0 s", " s") for t in yt])
-    ax.set_xlabel("rows", fontsize=9, color=INK2)
-    ax.set_title("Refresh time vs table size (log-log; a straight 45° line = linear scaling)", fontsize=10.5,
-                 color=INK, loc="left")
-    _legend(ax, {v[0]["engine"] for v in by.values()}, loc="upper left")
-    fig.tight_layout()
-    fig.savefig(path, facecolor=SURFACE)
-    plt.close(fig)
+            by.setdefault(r["solution"], {})[r["scale"]] = r
+    body = []
+    for name, d in by.items():
+        if "5M" in d and "20M" in d:
+            # compare like with like: refresh vs refresh when both exist, else initial load vs initial load
+            k = "refresh_median_s" if d["5M"]["n_refresh"] and d["20M"]["n_refresh"] else "initial_load_s"
+            a, b = d["5M"][k], d["20M"][k]
+            body.append((b / a, [f"`{name}`", "refresh" if k == "refresh_median_s" else "initial load",
+                                 fmt_t(a), fmt_t(b), f"{b / a:.1f}×"]))
+    if not body:
+        return ""
+    body.sort(key=lambda x: x[0])
+    return ("## Scaling: 4× the rows costs how much more time?\n\n"
+            "4.0× is linear. Above that, the method gets worse as the table outgrows memory "
+            "(15 GB RAM, 4 GB shared buffers; the PostgreSQL table is 3.8 GB at 5M and 15.3 GB at 20M).\n\n"
+            + md_table(["Solution", "Compared", "5M", "20M", "Factor"], [b for _, b in body], "llrrr") + "\n")
 
 
 def main():
@@ -360,7 +341,7 @@ def main():
         chart_refresh(rows, s, CHARTS / f"refresh_{s}.png")
         chart_maintenance(rows, s, CHARTS / f"maintenance_{s}.png")
         chart_storage(rows, s, CHARTS / f"storage_{s}.png")
-    chart_scaling(rows, CHARTS / "scaling.png")
+    md.append(scaling_table(rows))
     (OUT / "RESULTS.md").write_text("\n".join(md))
     print(f"wrote {OUT/'summary.csv'}, {OUT/'RESULTS.md'}, charts for {scales}")
 

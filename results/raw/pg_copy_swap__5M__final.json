@@ -7,7 +7,7 @@
  "rows": 5000000,
  "reps": 2,
  "tag": "final",
- "started_utc": "2026-11-21T20:25:49+00:00",
+ "started_utc": "2026-11-22T00:53:09+00:00",
  "host": {
   "cpus": 4,
   "cpu_model": "Intel(R) Xeon(R) Processor @ 2.10GHz",
@@ -17,26 +17,26 @@
  },
  "steps": {
   "initial_load": {
-   "total_s": 45.177,
+   "total_s": 43.856,
    "phases": {
-    "copy": 28.885,
-    "index_a": 7.347,
-    "index_b": 8.576,
-    "index": 15.932,
-    "analyze": 0.336,
+    "copy": 28.066,
+    "index_a": 6.944,
+    "index_b": 8.475,
+    "index": 15.428,
+    "analyze": 0.341,
     "swap": 0.002
    },
    "notes": {},
-   "cpu_avg_pct": 32.7,
-   "cpu_max_pct": 80.3,
-   "mem_peak_gb": 3.17,
-   "disk_peak_delta_gb": 6.87,
+   "cpu_avg_pct": 32.8,
+   "cpu_max_pct": 77.8,
+   "mem_peak_gb": 2.9,
+   "disk_peak_delta_gb": 6.9,
    "verify": {
     "ok": true,
     "got": [
      5000000,
-     2500036124.131952,
-     1252488814.4500475,
+     2500036124.1319737,
+     1252488814.4500558,
      4999999
     ],
     "want": [
@@ -63,86 +63,86 @@
    "point": {
     "verified": true,
     "n": 500,
-    "p50_ms": 0.102,
-    "p95_ms": 0.185,
-    "p99_ms": 0.323,
-    "max_ms": 2.349,
-    "mean_ms": 0.119
+    "p50_ms": 0.093,
+    "p95_ms": 0.156,
+    "p99_ms": 0.24,
+    "max_ms": 0.642,
+    "mean_ms": 0.103
    },
    "series": {
     "verified": true,
     "n": 500,
-    "p50_ms": 0.115,
-    "p95_ms": 0.153,
-    "p99_ms": 0.262,
-    "max_ms": 0.76,
-    "mean_ms": 0.123
+    "p50_ms": 0.107,
+    "p95_ms": 0.137,
+    "p99_ms": 0.212,
+    "max_ms": 0.595,
+    "mean_ms": 0.112
    },
    "tenant_agg": {
     "verified": true,
     "n": 40,
-    "p50_ms": 9.6,
-    "p95_ms": 52.904,
-    "p99_ms": 105.671,
-    "max_ms": 105.671,
-    "mean_ms": 15.977
+    "p50_ms": 8.563,
+    "p95_ms": 30.582,
+    "p99_ms": 86.943,
+    "max_ms": 86.943,
+    "mean_ms": 13.072
    },
    "full_agg": {
     "verified": true,
     "n": 5,
-    "p50_ms": 511.739,
-    "p95_ms": 531.665,
-    "p99_ms": 531.665,
-    "max_ms": 531.665,
-    "mean_ms": 502.702
+    "p50_ms": 491.666,
+    "p95_ms": 605.02,
+    "p99_ms": 605.02,
+    "max_ms": 605.02,
+    "mean_ms": 512.127
    }
   },
   "concurrency": {
-   "n": 75045,
-   "p50_ms": 1.467,
-   "p95_ms": 2.896,
-   "p99_ms": 4.131,
-   "max_ms": 48.817,
-   "mean_ms": 1.598,
+   "n": 77458,
+   "p50_ms": 1.424,
+   "p95_ms": 2.786,
+   "p99_ms": 4.09,
+   "max_ms": 21.25,
+   "mean_ms": 1.549,
    "threads": 8,
-   "seconds": 15.0,
-   "qps": 5001.5,
+   "seconds": 15.01,
+   "qps": 5161.7,
    "errors": 0
   },
   "refresh": [
    {
-    "total_s": 48.099,
+    "total_s": 46.177,
     "phases": {
-     "copy": 29.297,
-     "index_a": 6.521,
-     "index_b": 8.676,
-     "index": 15.205,
-     "analyze": 0.447,
-     "swap": 3.132
+     "copy": 28.112,
+     "index_a": 6.522,
+     "index_b": 7.848,
+     "index": 14.38,
+     "analyze": 0.393,
+     "swap": 3.277
     },
     "notes": {},
-    "cpu_avg_pct": 33.2,
-    "cpu_max_pct": 80.1,
-    "mem_peak_gb": 2.96,
-    "disk_peak_delta_gb": 6.92,
+    "cpu_avg_pct": 32.7,
+    "cpu_max_pct": 80.0,
+    "mem_peak_gb": 3.34,
+    "disk_peak_delta_gb": 6.91,
     "reader": {
-     "n": 2353,
-     "p50_ms": 0.41,
-     "p95_ms": 0.783,
-     "p99_ms": 2.756,
-     "max_ms": 1002.496,
-     "mean_ms": 0.939,
+     "n": 2265,
+     "p50_ms": 0.401,
+     "p95_ms": 0.722,
+     "p99_ms": 2.848,
+     "max_ms": 993.201,
+     "mean_ms": 0.928,
      "errors": 0,
      "missing_rows": 0,
-     "max_stall_s": 1.023,
+     "max_stall_s": 1.013,
      "first_error": null
     },
     "verify": {
      "ok": true,
      "got": [
       5000000,
-      2500036124.1319695,
-      1252488814.4500494,
+      2500036124.131944,
+      1252488814.4500492,
       4999999
      ],
      "want": [
@@ -156,27 +156,27 @@
   ],
   "incremental": {
    "upsert_1pct": {
-    "total_s": 2.732,
+    "total_s": 2.557,
     "phases": {
-     "stage_copy": 0.22,
-     "merge": 2.466,
-     "commit": 0.042
+     "stage_copy": 0.203,
+     "merge": 2.319,
+     "commit": 0.033
     },
     "notes": {},
-    "cpu_avg_pct": 25.7,
-    "cpu_max_pct": 30.5,
-    "mem_peak_gb": 2.03,
-    "disk_peak_delta_gb": 0.19,
+    "cpu_avg_pct": 23.9,
+    "cpu_max_pct": 27.9,
+    "mem_peak_gb": 2.01,
+    "disk_peak_delta_gb": 0.2,
     "reader": {
-     "n": 132,
-     "p50_ms": 0.468,
-     "p95_ms": 2.097,
-     "p99_ms": 4.019,
-     "max_ms": 6.23,
-     "mean_ms": 0.65,
+     "n": 124,
+     "p50_ms": 0.447,
+     "p95_ms": 1.041,
+     "p99_ms": 4.423,
+     "max_ms": 4.596,
+     "mean_ms": 0.611,
      "errors": 0,
      "missing_rows": 0,
-     "max_stall_s": 0.024,
+     "max_stall_s": 0.025,
      "first_error": null
     },
     "rows": 50000,
@@ -184,8 +184,8 @@
      "ok": true,
      "got": [
       5012500,
-      2506180739.1849775,
-      1255660231.450039,
+      2506180739.184928,
+      1255660231.4500532,
       5012499
      ],
      "want": [
@@ -197,27 +197,27 @@
     }
    },
    "upsert_10pct": {
-    "total_s": 18.672,
+    "total_s": 19.291,
     "phases": {
-     "stage_copy": 1.998,
-     "merge": 16.518,
-     "commit": 0.153
+     "stage_copy": 2.006,
+     "merge": 17.134,
+     "commit": 0.149
     },
     "notes": {},
-    "cpu_avg_pct": 26.9,
-    "cpu_max_pct": 37.6,
-    "mem_peak_gb": 4.01,
-    "disk_peak_delta_gb": 1.3,
+    "cpu_avg_pct": 26.1,
+    "cpu_max_pct": 35.0,
+    "mem_peak_gb": 3.95,
+    "disk_peak_delta_gb": 1.29,
     "reader": {
-     "n": 904,
-     "p50_ms": 0.416,
-     "p95_ms": 0.665,
-     "p99_ms": 2.694,
-     "max_ms": 5.155,
-     "mean_ms": 0.487,
+     "n": 933,
+     "p50_ms": 0.423,
+     "p95_ms": 0.643,
+     "p99_ms": 2.45,
+     "max_ms": 4.703,
+     "mean_ms": 0.488,
      "errors": 0,
      "missing_rows": 0,
-     "max_stall_s": 0.029,
+     "max_stall_s": 0.031,
      "first_error": null
     },
     "rows": 500000,
@@ -225,8 +225,8 @@
      "ok": true,
      "got": [
       5137500,
-      2568451675.9979634,
-      1286885366.2300305,
+      2568451675.997969,
+      1286885366.2300177,
       5137499
      ],
      "want": [
@@ -238,24 +238,24 @@
     }
    },
    "replace_tenant": {
-    "total_s": 6.299,
+    "total_s": 6.253,
     "phases": {
-     "delete": 0.728,
-     "copy": 5.528,
-     "commit": 0.041
+     "delete": 0.701,
+     "copy": 5.511,
+     "commit": 0.037
     },
     "notes": {},
-    "cpu_avg_pct": 27.8,
-    "cpu_max_pct": 35.3,
-    "mem_peak_gb": 4.49,
-    "disk_peak_delta_gb": 0.41,
+    "cpu_avg_pct": 28.9,
+    "cpu_max_pct": 37.9,
+    "mem_peak_gb": 4.33,
+    "disk_peak_delta_gb": 0.42,
     "rows": 257580,
     "verify": {
      "ok": true,
      "got": [
       5135880,
-      2567786667.1400046,
-      1286531952.030017,
+      2567786667.139962,
+      1286531952.03003,
       5162499
      ],
      "want": [
@@ -268,41 +268,41 @@
    }
   },
   "storage_after": {
-   "table": 2975375360,
+   "table": 2975367168,
    "index_a": 860487680,
    "index_b": 838737920,
-   "total": 4674600960,
-   "database": 4682487475,
+   "total": 4674592768,
+   "database": 4682471091,
    "indexes": {
     "big_table_a": 860487680,
     "big_table_b": 838737920
    },
-   "data_dir_bytes": 11375926999
+   "data_dir_bytes": 11358972467
   },
   "queries_after": {
    "point": {
     "n": 300,
-    "p50_ms": 0.105,
-    "p95_ms": 0.162,
-    "p99_ms": 0.312,
-    "max_ms": 1.597,
-    "mean_ms": 0.119
+    "p50_ms": 0.1,
+    "p95_ms": 0.137,
+    "p99_ms": 0.21,
+    "max_ms": 0.322,
+    "mean_ms": 0.104
    },
    "series": {
     "n": 300,
-    "p50_ms": 0.113,
+    "p50_ms": 0.105,
     "p95_ms": 0.148,
-    "p99_ms": 0.279,
-    "max_ms": 0.845,
-    "mean_ms": 0.121
+    "p99_ms": 0.239,
+    "max_ms": 0.38,
+    "mean_ms": 0.112
    },
    "tenant_agg": {
     "n": 20,
-    "p50_ms": 8.265,
-    "p95_ms": 49.281,
-    "p99_ms": 232.674,
-    "max_ms": 232.674,
-    "mean_ms": 22.153
+    "p50_ms": 9.844,
+    "p95_ms": 48.392,
+    "p99_ms": 185.14,
+    "max_ms": 185.14,
+    "mean_ms": 21.033
    }
   }
  },
@@ -353,5 +353,5 @@
   },
   "conf_overrides": {}
  },
- "wall_s": 154.9
+ "wall_s": 146.9
 }

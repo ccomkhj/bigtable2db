@@ -14,14 +14,14 @@ The delta is scattered over the whole table (the hard case): 75 % updates, 25 % 
 
 | Unpartitioned table (`pg_parallel_swap`) | 5M rows (3.8 GB, fits in RAM) | 20M rows (15.3 GB, does not) |
 |---|--:|--:|
-| Full refresh | 28 s | 2 min 21 s |
-| Upsert 1 % | 2.0 s | **32 s** |
-| Upsert 10 % | 15 s | **4 min 09 s** |
+| Full refresh | 26 s | 2 min 21 s |
+| Upsert 1 % | 1.6 s | **32 s** |
+| Upsert 10 % | 14 s | **4 min 09 s** |
 | Replace largest tenant (5 %): `DELETE` + `COPY` | 4.5 s | 31 s |
 | Size before → after the three operations | 3.83 → 4.35 GB (+14 %) | 15.32 → 17.37 GB (+13 %) |
 
 * At 5M, a 10 % upsert costs half a full refresh. **At 20M it costs almost twice a full refresh.**
-  Row count went up 4×, upsert time 16×: every changed row needs a random page in the heap and in two indexes,
+  Row count went up 4×, upsert time 18–20×: every changed row needs a random page in the heap and in two indexes,
   and once those pages are not in memory each of them is a disk read.
 * By linear interpolation between the two measured points, the break-even at 20M on this machine is at roughly
   **5 % of rows changed**; above that, rebuilding is faster. This is an estimate from two points, and it moves
@@ -74,11 +74,11 @@ it contains the partition key; index B becomes one local index per partition.
 ### How many partitions?
 
 5M rows, same data, one load each (`results/raw/pg_partition_swap__5M__lab_layout_*.json`; the LIST row is
-the first 5M matrix run):
+the first 5M matrix run, `pg_partition_swap__5M__v1swap.json`):
 
 | Layout | Partitions | Initial load | `series` p50 | Replace largest tenant |
 |---|--:|--:|--:|--:|
-| unpartitioned | 1 | 25 s | 0.11 ms | 4.5 s |
+| unpartitioned | 1 | 24 s | 0.11 ms | 4.5 s |
 | `HASH (tenant_id)`, 8 | 8 | 23 s | 0.29 ms | 6.6 s |
 | `LIST`: tenants ≥ 1 % dedicated + 8 tail buckets (chosen) | 15 | 24 s | 0.35 ms | **2.3 s** |
 | `HASH (tenant_id)`, 32 | 32 | 25 s | 0.58 ms | 3.0 s |

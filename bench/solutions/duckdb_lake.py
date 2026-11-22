@@ -19,7 +19,7 @@ min/max pruning*:
                                            equivalent of a covering index whose
                                            "pointer" is the business key
 
-See docs/notes/duckdb.md for the variants that were measured and rejected.
+Design notes and the final measurements: docs/notes/duckdb.md
 """
 from __future__ import annotations
 
@@ -776,6 +776,6 @@ class DuckdbNative(LakeBase):
 
     def info(self) -> dict:
         i = super().info()
-        i["native"] = {"indexes": "none (zone maps on sorted data); ART measured and rejected, see notes",
+        i["native"] = {"indexes": "none (zone maps on sorted data); ART indexes not used",
                        "projection_b_columns": B_COLS, "maintenance": "copy file, SQL in the copy, switch pointer"}
         return i

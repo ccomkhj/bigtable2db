@@ -1,6 +1,6 @@
 """PostgreSQL: avoid the full refresh.
 
-Two solutions (design notes and every measured variant: docs/notes/postgres_incremental.md):
+Two solutions (design notes and the measured variants: docs/notes/postgres_incremental.md):
 
 ``pg_incremental``
     Unpartitioned table, same DDL as the baseline. Maintained with plain SQL

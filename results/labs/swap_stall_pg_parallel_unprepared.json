@@ -1,0 +1,31 @@
+{
+ "solution": "pg_parallel_swap",
+ "scale": "5M",
+ "prepare": "0",
+ "refresh_s": 26.8,
+ "phases": {
+  "copy": 16.197,
+  "index_a": 7.424,
+  "index_b": 8.048,
+  "index": 8.054,
+  "analyze": 0.306,
+  "swap": 2.183
+ },
+ "reader_queries": 1446,
+ "reader_max_ms": 228,
+ "slow_queries_[t_since_refresh_start_s, ms]": [
+  [
+   22.76,
+   228
+  ]
+ ],
+ "what_the_reader_waited_on": [
+  {
+   "samples": 4,
+   "wait_event_type": "IO",
+   "wait_event": "DataFileRead",
+   "ungranted_lock": null,
+   "blocked_by": null
+  }
+ ]
+}

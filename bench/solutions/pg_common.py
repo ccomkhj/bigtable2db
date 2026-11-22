@@ -98,11 +98,15 @@ def rename_swap(conn: psycopg.Connection, new: str) -> None:
     """Atomically make table `new` (with indexes new_a / new_b) the live big_table.
 
     The swap transaction only RENAMES (catalog updates, milliseconds); the old table is
-    dropped after the commit, when no reader can reach it any more. Dropping it inside
-    the swap transaction would hold the ACCESS EXCLUSIVE lock for as long as the DROP
-    takes (measured: ~1 s reader stall for a 4 GB table), and on a TimescaleDB hypertable
-    it can deadlock with a reader, because DROP locks chunks before the parent while
-    readers lock the parent first. LOCK TABLE up front fixes the lock order in both steps."""
+    dropped after the commit, when no reader can reach it any more. On a TimescaleDB
+    hypertable, DROP inside the swap transaction deadlocked with a reader (DROP locks
+    chunks before the parent, readers lock the parent first); LOCK TABLE up front fixes
+    the lock order in both steps. For a plain table it makes no measurable difference
+    (PostgreSQL unlinks the files after releasing the locks either way).
+
+    Readers can still pause for deadlock_timeout (1 s) here if autovacuum is working on
+    the live table: the LOCK waits that long before the worker is cancelled. See
+    bench/labs/swap_stall.py and the README."""
     conn.execute("DROP TABLE IF EXISTS big_table_old")        # leftover of a crashed run
     with conn.transaction():
         conn.execute("SET LOCAL lock_timeout = '30s'")

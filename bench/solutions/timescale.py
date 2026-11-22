@@ -5,7 +5,7 @@
     ts_plain_control plain PostgreSQL table in the *same image* with the *same loader*
                      (isolates what the hypertable itself costs / buys)
 
-Design notes, every measured variant and the limitations are in docs/notes/timescaledb.md.
+Design notes, measurements and limitations: docs/notes/timescaledb.md.
 """
 from __future__ import annotations
 

@@ -117,7 +117,7 @@ Managed flavours of the measured engines (RDS/Aurora PostgreSQL, Tiger Cloud, Cl
 1. Framework, generator and one reference solution written and validated end to end (`100k`, `1M`).
 2. One sub-agent per engine family implements and tunes its solutions at `1M`, records every variant it tried (including the ones that lost) in `docs/notes/`, and validates once at `5M`.
 3. A sixth agent researches cloud pricing and published load performance for the estimate-only platforms.
-4. All solutions are reviewed, then the final matrix runs **sequentially**: every solution at `5M` and `20M`, ≥2 full loads each (1 initial + ≥1 refresh under read load).
+4. All solutions are reviewed, then the final matrix runs **sequentially**: every solution at `5M` and `20M`, ≥2 full loads each (1 initial + ≥1 refresh under read load). The exceptions that had to be made are listed in `README.md` under *How to read the numbers*.
 5. `bench/report.py` turns `results/raw/*.json` into tables and charts; `README.md` holds the findings and the decision guide.
 
 Progress is tracked in [`PROGRESS.md`](PROGRESS.md).

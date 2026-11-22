@@ -1,0 +1,38 @@
+{
+ "solution": "pg_parallel_swap",
+ "scale": "5M",
+ "prepare": "1",
+ "autovacuum_mode": "disable",
+ "autovacuum_worker_seen_before_refresh": null,
+ "autovacuum_tasks_cancelled_in_server_log": 0,
+ "refresh_s": 26.4,
+ "phases": {
+  "copy": 15.058,
+  "index_a": 8.83,
+  "index_b": 8.859,
+  "index": 8.865,
+  "analyze": 0.335,
+  "swap": 2.142
+ },
+ "reader_queries": 1424,
+ "reader_max_ms": 162,
+ "slow_queries_[t_since_refresh_start_s, ms]": [
+  [
+   22.33,
+   162
+  ],
+  [
+   22.57,
+   158
+  ]
+ ],
+ "what_the_reader_waited_on": [
+  {
+   "samples": 5,
+   "wait_event_type": "IO",
+   "wait_event": "DataFileRead",
+   "ungranted_lock": null,
+   "blocked_by": null
+  }
+ ]
+}

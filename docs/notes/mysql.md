@@ -22,7 +22,7 @@ Text keys are `VARCHAR … CHARACTER SET ascii COLLATE ascii_bin`: byte comparis
 InnoDB stores the table *inside* the primary-key B-tree, so the choice of primary key is the choice of
 physical row order.
 
-| 1M rows | cluster on `id` (chosen) | cluster on the business key |
+| 1M rows, one run each (`results/raw/mysql_load_swap__1M__lab_pk_*.json`) | cluster on `id` (chosen) | cluster on the business key |
 |---|---|---|
 | Load + index | 15.3 s | 15.7 s |
 | Size | **840 MB** | 1,220 MB |

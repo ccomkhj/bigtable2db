@@ -126,7 +126,7 @@ binary `COPY` (ADBC) a further −27 % on the `COPY` phase, which the final solu
 | TimescaleDB columnstore | 6 min 46 s | 9 min 05 s | 64 s | 3 min 58 s |
 
 * **In PostgreSQL the answer flips with memory.** At 5M rows (3.8 GB, cached) a 10 % upsert costs half a
-  refresh. At 20M (15.3 GB on a 15 GB machine) it costs almost two. Four times the rows, sixteen times the
+  refresh. At 20M (15.3 GB on a 15 GB machine) it costs almost two. Four times the rows, eighteen times the
   upsert time.
 * **Cheap writes are paid for by readers.** ClickHouse `ReplacingMergeTree` upserts in a second, but every read
   must de-duplicate (`FINAL`), and right after maintenance the secondary lookup went from 23 ms to 452 ms until
@@ -151,7 +151,26 @@ What differs is the longest pause a reader saw at the moment of the swap:
 | PostgreSQL partitioned (15 partitions) | 8.0 s |
 | PostgreSQL `TRUNCATE` + `COPY` | 6 min 19 s |
 
-SWAP_STALL_PLACEHOLDER
+**Where the one-second pause comes from — verified.** It is not the swap itself, which is a few catalog updates.
+Some time after a bulk load, autovacuum starts working on the new table. The swap needs an exclusive lock on the
+live table; PostgreSQL makes that request wait `deadlock_timeout` (1 s by default) before it cancels the
+autovacuum worker, and every reader queues behind the pending lock for the same second. Reproduced in isolation
+at 5M rows ([`bench/labs/swap_stall.py`](bench/labs/swap_stall.py), [`results/labs/`](results/labs)):
+
+| Condition at the moment of the swap | Worst read during the refresh | What the reader waited on |
+|---|--:|---|
+| autovacuum worker active on the live table | **1,003 ms** | relation lock, behind the swap's `LOCK TABLE … ACCESS EXCLUSIVE`; server log: 1 autovacuum task cancelled |
+| `autovacuum_enabled = false` on the live table | 162 ms | disk reads only, no lock wait |
+| refresh started before autovacuum did | 21 ms | nothing |
+
+For a table that is replaced wholesale and never updated in place, create it with `autovacuum_enabled = false`
+and run `VACUUM (ANALYZE)` yourself at a time that does not collide with the next swap. The 6 s (hypertable) and
+8 s (15 partitions) pauses are consistent with the same wait repeated per child table; that part is an
+inference and was not isolated. **The benchmark numbers above were measured without this fix.**
+
+Two more lessons from the runs: `TRUNCATE` + `COPY` blocks every reader for the whole load, and on a TimescaleDB
+hypertable, dropping the old table *inside* the swap transaction deadlocked with a reader — rename in the
+transaction, drop after the commit.
 
 ### 4. Serving the application
 
@@ -236,8 +255,9 @@ I/O (I/O-Optimized is the safer choice). Both are inferences from the price list
   this machine's 70 GB disk.
 * **Synthetic data.** Text is built from a 2,000-word vocabulary so it compresses like real text; each item's
   two text keys repeat over 20 periods. Different data shifts the columnar compression ratios (here ≈ 7×).
-* **The swap was improved between the 5M and 20M matrices** (old table dropped after the rename commits instead
-  of inside the transaction). The affected 5M runs were repeated; the originals are kept as `*__5M__v1swap.json`.
+* **The swap was changed between the 5M and 20M matrices** (old table dropped after the rename commits instead
+  of inside the transaction, after the hypertable deadlock). The ten affected 5M runs were repeated; the
+  originals are kept as `*__5M__v1swap.json`. Times moved by less than 10 %.
 * **Cloud platforms are estimates** and are never mixed into measured tables.
 
 ## Reproduce

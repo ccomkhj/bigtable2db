@@ -123,8 +123,16 @@ Reading the tables:
 * **The rename takes an `ACCESS EXCLUSIVE` lock** for a few milliseconds, but it has to *wait* for every query
   still running on the old table, and new queries queue behind it. Set `lock_timeout` on the swap and retry,
   so that one long report cannot freeze the application.
-* **Drop the old table after the rename commits, not inside the same transaction** — see the swap-stall
-  diagnostic in the README. Foreign keys, views and grants that reference the table by OID must be re-created on
-  the new table before the swap; a view over `big_table` keeps pointing at the *old* table after a rename.
+* **Autovacuum on the live table makes the swap pause readers for `deadlock_timeout` (1 s).** The swap's lock
+  request waits that long before PostgreSQL cancels the autovacuum worker, and every reader queues behind it.
+  Verified in isolation (`results/labs/swap_stall_*.json`): 1,003 ms reader pause with a worker on the table,
+  162 ms worst read with `autovacuum_enabled = false` on it. For a table that is replaced wholesale, create it
+  with autovacuum disabled and run `VACUUM (ANALYZE)` yourself, away from the next swap. The benchmark numbers
+  were measured *without* this fix.
+* **Rename first, drop afterwards.** The swap here renames old and new in one transaction and drops the old
+  table after the commit. For a plain table this made no measurable difference to readers; on a TimescaleDB
+  hypertable, dropping inside the transaction deadlocked with a reader.
+* Foreign keys, views and grants that reference the table by OID must be re-created on the new table before the
+  swap; a view over `big_table` keeps pointing at the *old* table after a rename.
 * **Autovacuum / statistics:** `ANALYZE` on the new table is part of the measured time (about 1 s); skipping it
   leaves the planner without statistics until autovacuum notices.

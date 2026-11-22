@@ -11,7 +11,7 @@
 
 Both read the Parquet files server-side with file() (production analogue: s3()), bucket the
 table by `tenant_id % 8` so the post-insert merges run in parallel, and only swap the new table
-in once every bucket is a single merged part. Design notes and every measured variant:
+in once every bucket is a single merged part. Design notes and the final measurements:
 docs/notes/clickhouse.md
 """
 from __future__ import annotations

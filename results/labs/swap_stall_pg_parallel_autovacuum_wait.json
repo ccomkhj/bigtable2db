@@ -1,0 +1,45 @@
+{
+ "solution": "pg_parallel_swap",
+ "scale": "5M",
+ "prepare": "1",
+ "autovacuum_mode": "wait",
+ "autovacuum_worker_seen_before_refresh": "autovacuum: VACUUM public.big_table",
+ "autovacuum_tasks_cancelled_in_server_log": 1,
+ "refresh_s": 28.0,
+ "phases": {
+  "copy": 16.071,
+  "index_a": 8.085,
+  "index_b": 8.446,
+  "index": 8.451,
+  "analyze": 0.338,
+  "swap": 3.077
+ },
+ "reader_queries": 1441,
+ "reader_max_ms": 1003,
+ "slow_queries_[t_since_refresh_start_s, ms]": [
+  [
+   23.47,
+   210
+  ],
+  [
+   25.88,
+   1003
+  ]
+ ],
+ "what_the_reader_waited_on": [
+  {
+   "samples": 35,
+   "wait_event_type": "Lock",
+   "wait_event": "relation",
+   "ungranted_lock": "relation:big_table:AccessShareLock",
+   "blocked_by": "LOCK TABLE big_table IN ACCESS EXCLUSIVE MODE"
+  },
+  {
+   "samples": 4,
+   "wait_event_type": "IO",
+   "wait_event": "DataFileRead",
+   "ungranted_lock": null,
+   "blocked_by": null
+  }
+ ]
+}

@@ -1,0 +1,33 @@
+{
+ "solution": "pg_partition_swap",
+ "scale": "5M",
+ "prepare": "1",
+ "refresh_s": 28.8,
+ "phases": {
+  "layout": 0.033,
+  "create": 0.081,
+  "copy": 17.529,
+  "analyze": 8.733,
+  "analyze_tail": 1.916,
+  "index": 8.734,
+  "index_attach": 0.005,
+  "swap": 2.46
+ },
+ "reader_queries": 1490,
+ "reader_max_ms": 471,
+ "slow_queries_[t_since_refresh_start_s, ms]": [
+  [
+   22.63,
+   471
+  ]
+ ],
+ "what_the_reader_waited_on": [
+  {
+   "samples": 14,
+   "wait_event_type": "IO",
+   "wait_event": "DataFileRead",
+   "ungranted_lock": null,
+   "blocked_by": null
+  }
+ ]
+}

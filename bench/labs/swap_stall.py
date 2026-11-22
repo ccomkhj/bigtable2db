@@ -27,12 +27,32 @@ def main():
     ap.add_argument("--solution", default="pg_parallel_swap")
     ap.add_argument("--scale", default="5M")
     ap.add_argument("--prepare", default="1", help="1 = reader uses server-side prepared statements")
+    ap.add_argument("--autovacuum", default="ignore", choices=["ignore", "wait", "disable"],
+                    help="wait = start the refresh only once an autovacuum worker is processing big_table "
+                         "(what happens in production some time after a load); "
+                         "disable = ALTER TABLE big_table SET (autovacuum_enabled = false) right after the load, "
+                         "then wait just as long")
     a = ap.parse_args()
     ds = Dataset(spec.dataset_dir(a.scale), datagen.generate(a.scale))
     sol = load_all()[a.solution]()
     sol.setup()
     try:
         sol.full_refresh(ds, Phases())
+        admin = f"host=127.0.0.1 port={sol.port} user=postgres password=bench dbname=postgres"
+        av_seen = None
+        if a.autovacuum != "ignore":
+            with psycopg.connect(admin, autocommit=True) as c:
+                if a.autovacuum == "disable":
+                    c.execute("ALTER TABLE big_table SET (autovacuum_enabled = false, toast.autovacuum_enabled = false)")
+                t_wait = time.time()
+                while time.time() - t_wait < 150:
+                    av_seen = c.execute("SELECT left(query, 80) FROM pg_stat_activity "
+                                        "WHERE backend_type = 'autovacuum worker' AND query ILIKE '%big_table%'").fetchone()
+                    if av_seen and a.autovacuum == "wait":
+                        break
+                    if a.autovacuum == "disable" and time.time() - t_wait > 90:
+                        break
+                    time.sleep(0.5)
         params = [tuple(p) for p in ds.manifest["params"]["point"]]
         stop = threading.Event()
         lat: list[tuple[float, float]] = []
@@ -84,7 +104,13 @@ def main():
         for t in ts:
             t.join(timeout=30)
         slow = [(round(ts_ - t0, 2), round(ms)) for ts_, ms in lat if ms > 100]
+        from .. import dockerutil as du
+        import subprocess
+        log = subprocess.run(["docker", "logs", sol.container], capture_output=True, text=True)
+        cancels = (log.stdout + log.stderr).count("canceling autovacuum task")
         print(json.dumps({"solution": a.solution, "scale": a.scale, "prepare": a.prepare,
+                          "autovacuum_mode": a.autovacuum, "autovacuum_worker_seen_before_refresh": av_seen and av_seen[0],
+                          "autovacuum_tasks_cancelled_in_server_log": cancels,
                           "refresh_s": round(t1 - t0, 1), "phases": ph.times,
                           "reader_queries": len(lat), "reader_max_ms": round(max(ms for _, ms in lat)),
                           "slow_queries_[t_since_refresh_start_s, ms]": slow,

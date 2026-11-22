@@ -32,8 +32,9 @@ append-only time series?
 | Replace largest tenant | 31 s | 47 s | 64 s |
 | Size after maintenance | 17.4 GB | 18.1 GB | **24.4 GB** |
 
-At 5M the control (`ts_plain_control`, 29 s) matches vanilla PostgreSQL (28 s), so the image itself costs
-nothing; the differences above come from the hypertable and the columnstore.
+At 5M the control (`ts_plain_control`, 30 s) is on par with `pg_incremental` (29 s), which uses an equally
+simple loader, and 15 % behind the tuned `pg_parallel_swap` (26 s); the hypertable needs 48 s. The image itself
+is not what costs the time — the hypertable and the columnstore are.
 
 ## Findings
 
@@ -50,11 +51,14 @@ nothing; the differences above come from the hypertable and the columnstore.
     refresh — and the three maintenance operations inflated the table from 4.1 GB to 24.4 GB, because the
     touched rows now sit in the row store *with* their B-tree entries until a policy job recompresses them.
   * Loading directly into the columnstore (`timescaledb.enable_direct_compress_copy`) was slower than
-    COPY-then-convert at 1M (16.7 s vs 12.6 s) and produced worse-ordered batches, so it is not used.
+    COPY-then-convert at 1M (16.7 s vs 12.6 s, `results/raw/ts_columnstore__1M__lab_load_*.json`; one run each
+    on a machine that was not idle) and gave slower secondary lookups (37 ms vs 17 ms), so it is not used.
 * **Dropping a hypertable inside the swap transaction deadlocked with a reader** in the first 5M run: `DROP`
   locks the chunks before the parent, queries lock the parent first. Renaming inside the transaction and
   dropping afterwards (with an explicit `LOCK TABLE` on the parent first) fixed it; no deadlock in any later run.
-  Readers still paused for about 6 s at 20M while the old hypertable was dropped.
+  Readers still paused for about 6 s at the 20M swap. That is consistent with the autovacuum wait described in
+  [`postgres.md`](postgres.md) (1 s per relation being vacuumed, here the parent and its chunks), but it was not
+  isolated for hypertables.
 
 ## Verdict for this workload
 

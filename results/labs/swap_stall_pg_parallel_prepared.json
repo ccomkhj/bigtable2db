@@ -1,0 +1,18 @@
+{
+ "solution": "pg_parallel_swap",
+ "scale": "5M",
+ "prepare": "1",
+ "refresh_s": 25.9,
+ "phases": {
+  "copy": 15.853,
+  "index_a": 7.444,
+  "index_b": 7.613,
+  "index": 7.623,
+  "analyze": 0.287,
+  "swap": 2.108
+ },
+ "reader_queries": 1421,
+ "reader_max_ms": 21,
+ "slow_queries_[t_since_refresh_start_s, ms]": [],
+ "what_the_reader_waited_on": []
+}
